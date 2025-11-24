@@ -13,8 +13,10 @@ const ActivitiesPage = () => {
 
   return (
     <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
-      <h2 className="text-lg font-semibold text-primary">最近の記録（編集・削除）</h2>
-      <p className="text-xs text-slate-500">直近 {limit} 件まで表示します。数値/時間を変更すると自動保存されます。</p>
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📝</span>
+        <h2 className="text-lg font-semibold text-primary">最近の記録</h2>
+      </div>
       <div className="space-y-3">
         {recentActivities.length === 0 && <p className="text-sm text-slate-600">まだ記録がありません。</p>}
         {recentActivities.map((activity) => (

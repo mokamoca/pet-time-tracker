@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "../lib/supabase";
-import { addDays } from "../utils/date";
+import { addDays, startOfWeek } from "../utils/date";
 
 export type DailyStat = {
   date: string;
@@ -11,22 +11,22 @@ export type DailyStat = {
   streak_info?: number | null;
 };
 
-export type WeeklyResponse = {
+type State = {
+  daily?: DailyStat;
+  range?: RangeResponse;
+  loadDaily: (date: string) => Promise<void>;
+  loadRange: (period: "week" | "month" | "year" | "all") => Promise<void>;
+};
+
+type RangeResponse = {
   start: string;
   end: string;
   days: Array<DailyStat & { change_vs_last_week?: number | null }>;
 };
 
-type State = {
-  daily?: DailyStat;
-  weekly?: WeeklyResponse;
-  loadDaily: (date: string) => Promise<void>;
-  loadWeekly: (start: string) => Promise<void>;
-};
-
 export const useStatsStore = create<State>((set) => ({
   daily: undefined,
-  weekly: undefined,
+  range: undefined,
   loadDaily: async (date) => {
     const start = new Date(date);
     const end = new Date(date);
@@ -55,20 +55,37 @@ export const useStatsStore = create<State>((set) => ({
       },
     });
   },
-  loadWeekly: async (start) => {
-    const startDate = new Date(start);
-    const endDate = addDays(startDate, 7);
+  loadRange: async (period) => {
+    const today = new Date();
+    const nowIso = today.toISOString();
+    let startDate = startOfWeek(today);
+    let daysToFetch = 7;
+
+    if (period === "month") {
+      startDate = addDays(today, -29);
+      daysToFetch = 30;
+    }
+    if (period === "year") {
+      startDate = addDays(today, -364);
+      daysToFetch = 365;
+    }
+    if (period === "all") {
+      // fetch last 400 days to avoid huge payload; adjust if needed
+      startDate = addDays(today, -399);
+      daysToFetch = 400;
+    }
+
     const { data, error } = await supabase
       .from("activities")
       .select("*")
       .gte("started_at", startDate.toISOString())
-      .lt("started_at", endDate.toISOString());
+      .lt("started_at", nowIso);
     if (error) {
       console.error(error);
       return;
     }
-    const days: WeeklyResponse["days"] = [];
-    for (let i = 0; i < 7; i++) {
+    const days: State["range"]["days"] = [];
+    for (let i = 0; i < daysToFetch; i++) {
       const day = addDays(startDate, i);
       const dayStr = day.toISOString().slice(0, 10);
       const dayActs = data?.filter((a) => a.started_at.slice(0, 10) === dayStr) ?? [];
@@ -81,6 +98,6 @@ export const useStatsStore = create<State>((set) => ({
       });
       days.push({ date: dayStr, ...agg, streak_info: null, change_vs_last_week: null });
     }
-    set({ weekly: { start: startDate.toISOString(), end: endDate.toISOString(), days } });
+    set({ range: { start: startDate.toISOString(), end: nowIso, days } });
   },
 }));

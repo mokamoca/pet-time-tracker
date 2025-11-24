@@ -6,10 +6,10 @@ type QuickActionProps = {
 };
 
 const actions = [
-  { type: "walk", label: "おさんぽ", unit: "min", color: "bg-primary/80" },
-  { type: "play", label: "あそび", unit: "min", color: "bg-mint" },
-  { type: "treat", label: "おやつ", unit: "count", color: "bg-accent" },
-  { type: "care", label: "ケア", unit: "count", color: "bg-[#9ad0ff]" },
+  { type: "walk", label: "おさんぽ", unit: "min", color: "bg-primary/80", icon: "🚶‍♂️" },
+  { type: "play", label: "あそび", unit: "min", color: "bg-mint", icon: "🎾" },
+  { type: "treat", label: "おやつ", unit: "count", color: "bg-accent", icon: "🍪" },
+  { type: "care", label: "ケア", unit: "count", color: "bg-[#9ad0ff]", icon: "🧴" },
 ];
 
 const QuickActions = ({ petId }: QuickActionProps) => {
@@ -73,34 +73,46 @@ const QuickActions = ({ petId }: QuickActionProps) => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-2 sm:gap-3">
       <button
-        className={`${actions[0].color} relative overflow-hidden rounded-xl py-4 text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5`}
+        className={`${actions[0].color} relative overflow-hidden rounded-xl py-3 text-base sm:py-4 sm:text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5 flex items-center justify-between px-3`}
         onClick={() => handleTimerToggle("walk")}
       >
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{actions[0].icon}</span>
+          <span>{walkStart ? "ストップ" : "おさんぽ"}</span>
+        </div>
         <Icon type="walk" />
-        {walkStart ? "おさんぽ中…ここでゴール！" : "おさんぽスタート"}
       </button>
       <button
-        className={`${actions[1].color} relative overflow-hidden rounded-xl py-4 text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5`}
+        className={`${actions[1].color} relative overflow-hidden rounded-xl py-3 text-base sm:py-4 sm:text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5 flex items-center justify-between px-3`}
         onClick={() => handleTimerToggle("play")}
       >
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{actions[1].icon}</span>
+          <span>{playStart ? "ストップ" : "あそび"}</span>
+        </div>
         <Icon type="play" />
-        {playStart ? "あそび中…ここでストップ！" : "あそびスタート"}
       </button>
       <button
-        className={`${actions[2].color} relative overflow-hidden rounded-xl py-4 text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5`}
+        className={`${actions[2].color} relative overflow-hidden rounded-xl py-3 text-base sm:py-4 sm:text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5 flex items-center justify-between px-3`}
         onClick={() => handleCount("treat")}
       >
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{actions[2].icon}</span>
+          <span>おやつ</span>
+        </div>
         <Icon type="treat" />
-        おやつあげた！
       </button>
       <button
-        className={`${actions[3].color} relative overflow-hidden rounded-xl py-4 text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5`}
+        className={`${actions[3].color} relative overflow-hidden rounded-xl py-3 text-base sm:py-4 sm:text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5 flex items-center justify-between px-3`}
         onClick={() => handleCount("care")}
       >
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{actions[3].icon}</span>
+          <span>ケア</span>
+        </div>
         <Icon type="care" />
-        ケアしたよ！
       </button>
     </div>
   );

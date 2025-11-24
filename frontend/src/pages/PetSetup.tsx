@@ -41,9 +41,12 @@ const PetSetupPage = () => {
   const hasPets = useMemo(() => pets.length > 0, [pets.length]);
 
   return (
-    <div className="mx-auto max-w-lg space-y-4 rounded-2xl bg-white p-6 shadow-lg border border-primary/10">
-      <h2 className="text-xl font-semibold text-white">うちのコカードを作ろう</h2>
-      <p className="text-sm text-slate-700">まずは名前だけでOK。あとからゆっくり増やせます。</p>
+    <div className="mx-auto max-w-lg space-y-4 rounded-2xl bg-white p-5 shadow-lg border border-primary/10">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">🐾</span>
+        <h2 className="text-lg font-semibold text-primary">うちのコカード</h2>
+      </div>
+      <p className="text-sm text-slate-700">名前だけでOK。あとで増やせます。</p>
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           value={name}
@@ -61,26 +64,33 @@ const PetSetupPage = () => {
           <p className="text-sm font-semibold text-primary">登録済みのペット</p>
           <div className="space-y-2">
             {pets.map((p) => (
-              <div key={p.id} className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-2">
+              <div
+                key={p.id}
+                className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-2"
+              >
                 <input
                   value={edits[p.id] ?? ""}
                   onChange={(e) => setEdits((prev) => ({ ...prev, [p.id]: e.target.value }))}
                   className="flex-1 rounded-md border border-primary/20 bg-white p-2 text-slate-800"
                 />
-                <button
-                  type="button"
-                  onClick={() => handleUpdate(p.id)}
-                  className="rounded-md bg-primary px-3 py-2 text-xs font-semibold text-white shadow-sm"
-                >
-                  名前を更新
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(p.id)}
-                  className="rounded-md border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-500 shadow-sm"
-                >
-                  削除
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleUpdate(p.id)}
+                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white text-lg shadow-sm active:scale-95 transition"
+                    aria-label="名前を更新"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(p.id)}
+                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-red-200 bg-white text-red-500 text-lg shadow-sm active:scale-95 transition"
+                    aria-label="削除"
+                  >
+                    🗑️
+                  </button>
+                </div>
               </div>
             ))}
           </div>

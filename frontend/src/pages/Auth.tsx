@@ -34,7 +34,7 @@ const AuthPage = () => {
       <h1 className="text-2xl font-bold text-primary mb-2">
         {mode === "login" ? "おかえり！" : "ようこそ！"}
       </h1>
-      <p className="text-sm text-slate-700 mb-4">60秒で最初の「うちのコ」記録をはじめよう。</p>
+      <p className="text-sm text-slate-700 mb-4">今日の記録からスタートしよう。</p>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <input
           value={email}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   LineElement,
@@ -11,19 +11,18 @@ import {
 } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 import { useStatsStore } from "../store/stats";
-import { startOfWeek } from "../utils/date";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, BarElement);
 
 const DashboardPage = () => {
-  const { weekly, loadWeekly } = useStatsStore();
-  const start = useMemo(() => startOfWeek(new Date()).toISOString().slice(0, 10), []);
+  const { range, loadRange } = useStatsStore();
+  const [period, setPeriod] = useState<"week" | "month" | "year" | "all">("week");
 
   useEffect(() => {
-    loadWeekly(start);
-  }, [loadWeekly, start]);
+    loadRange(period);
+  }, [loadRange, period]);
 
-  const data = weekly?.days ?? [];
+  const data = range?.days ?? [];
   const labels = data.map((d) => d.date.slice(5));
   const walkPlay = {
     labels,
@@ -66,10 +65,34 @@ const DashboardPage = () => {
     { score: 0, label: "" },
   );
 
+  const periodLabel: Record<"week" | "month" | "year" | "all", string> = {
+    week: "1週間",
+    month: "1か月",
+    year: "1年",
+    all: "ぜんぶ",
+  };
+
   return (
     <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
-      <h2 className="text-lg font-semibold text-primary">ダッシュボード（がんばり記録）</h2>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2 whitespace-nowrap">
+          <span className="text-xl">📈</span> ダッシュボード
+        </h2>
+        <div className="grid grid-cols-4 gap-1 rounded-full bg-primary/10 p-1 sm:inline-grid sm:w-auto">
+          {(["week", "month", "year", "all"] as const).map((p) => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`rounded-full px-2 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold transition whitespace-nowrap ${
+                period === p ? "bg-primary text-white shadow" : "text-primary"
+              }`}
+            >
+              {periodLabel[p]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-3 md:grid-cols-3">
         <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} />
         <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} />
         <SummaryCard title="おやつ合計" value={`${Math.round(data.reduce((s, d) => s + (d.treat_count ?? 0), 0))} 回`} />
