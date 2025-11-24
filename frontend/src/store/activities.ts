@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "../lib/supabase";
 import { useStatsStore } from "./stats";
-import { startOfWeek } from "../utils/date";
 
 export type Activity = {
   id: number;
@@ -75,10 +74,9 @@ export const useActivityStore = create<State>((set, get) => ({
 
     // 直後にサマリを更新
     const today = new Date().toISOString().slice(0, 10);
-    const start = startOfWeek(new Date()).toISOString().slice(0, 10);
     const stats = useStatsStore.getState();
     stats.loadDaily(today);
-    stats.loadWeekly(start);
+    stats.loadRange("week");
   },
   update: async (id, payload) => {
     const { data, error } = await supabase.from("activities").update(payload).eq("id", id).select().single();
@@ -98,9 +96,8 @@ export const useActivityStore = create<State>((set, get) => ({
     if (data?.started_at) dates.add(data.started_at.slice(0, 10));
     for (const date of dates) {
       stats.loadDaily(date);
-      const weekStart = startOfWeek(new Date(date)).toISOString().slice(0, 10);
-      stats.loadWeekly(weekStart);
     }
+    stats.loadRange("week");
   },
   remove: async (id) => {
     const prev = get().activities.find((a) => a.id === id);
@@ -116,8 +113,7 @@ export const useActivityStore = create<State>((set, get) => ({
     if (prev?.started_at) dates.add(prev.started_at.slice(0, 10));
     for (const date of dates) {
       stats.loadDaily(date);
-      const weekStart = startOfWeek(new Date(date)).toISOString().slice(0, 10);
-      stats.loadWeekly(weekStart);
     }
+    stats.loadRange("week");
   },
 }));
