@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: pet-time-tracker
+Version: 0.1.0
+Summary: FastAPI backend for pet time tracker
+Author: Pet Time Tracker
+Requires-Python: >=3.10
+Requires-Dist: fastapi
+Requires-Dist: uvicorn[standard]
+Requires-Dist: sqlmodel
+Requires-Dist: sqlalchemy
+Requires-Dist: passlib[bcrypt]
+Requires-Dist: bcrypt>=4.1.2
+Requires-Dist: python-jose[cryptography]
+Requires-Dist: python-multipart
+Requires-Dist: pydantic-settings
+Requires-Dist: pillow
+Requires-Dist: email-validator
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: httpx; extra == "dev"
+Requires-Dist: anyio; extra == "dev"

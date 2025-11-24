@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+sqlalchemy
+passlib[bcrypt]
+bcrypt>=4.1.2
+python-jose[cryptography]
+python-multipart
+pydantic-settings
+pillow
+email-validator
+
+[dev]
+pytest
+httpx
+anyio
