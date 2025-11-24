@@ -29,8 +29,9 @@ const App = () => {
     <div className="min-h-screen bg-gradient-to-br from-bg to-[#fdf3e6]">
       <header className="sticky top-0 z-30 border-b border-white/70 bg-[#fdf3e6]/90 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <Link to="/" className="text-lg font-bold text-primary tracking-tight">
-            ぺっとじかん
+          <Link to="/" className="flex items-center gap-2 text-lg font-bold text-primary tracking-tight">
+            <img src="/logo.png" alt="PetLeaf" className="h-8 w-8 rounded-lg object-contain" />
+            <span className="hidden sm:inline">PetLeaf</span>
           </Link>
           {authed ? (
             <button

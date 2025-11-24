@@ -1,6 +1,6 @@
 {
-  "name": "Pet Time Tracker",
-  "short_name": "PetTime",
+  "name": "PetLeaf",
+  "short_name": "PetLeaf",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f7f1e3",
