@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "../lib/supabase";
-import { addDays, startOfWeek, startOfDay } from "../utils/date";
+import { addDays, startOfDay } from "../utils/date";
 
 export type DailyStat = {
   date: string;
@@ -60,8 +60,8 @@ export const useStatsStore = create<State>((set) => ({
   loadRange: async (period) => {
     set({ lastPeriod: period });
     const today = startOfDay(new Date());
-    const nowIso = new Date().toISOString();
-    let startDate = startOfWeek(today);
+    const tomorrowIso = addDays(today, 1).toISOString(); // include today fully
+    let startDate = addDays(today, -6); // default: past 7 days including today
     let daysToFetch = 7;
 
     if (period === "month") {
@@ -81,8 +81,8 @@ export const useStatsStore = create<State>((set) => ({
     const { data, error } = await supabase
       .from("activities")
       .select("*")
-      .gte("started_at", startDate.toISOString())
-      .lt("started_at", nowIso);
+      .gte("started_at", startOfDay(startDate).toISOString())
+      .lt("started_at", tomorrowIso);
     if (error) {
       console.error(error);
       return;
