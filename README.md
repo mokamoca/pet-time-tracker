@@ -19,6 +19,8 @@
 - ペットの名前変更・削除も簡単。多頭対応。PWA でホーム画面から起動
 
 ## 技術スタック & 簡易アーキテクチャ
+- 運用中: Vercel でフロント配信（Vite ビルド） + Supabase（Auth + DB/RLS）を直に叩く BaaS 構成
+- 付録: `backend/` の FastAPI 実装はローカル検証・将来のカスタム API 用サンプルとして同梱（本番では未使用）
 - Frontend: React 18, TypeScript, Vite, Tailwind CSS, React Router, Zustand, Chart.js, PWA
 - Backend: FastAPI, SQLModel/SQLite, JWT（python-jose）, passlib, Pillow
 - Infra: Supabase (Auth + Database)
@@ -132,11 +134,12 @@ backend/          # FastAPI サーバ
   tests/
 ```
 
-## デプロイ（例: Vercel + Supabase）
+## デプロイ（例: Vercel + Supabase）※現行運用
 1. GitHub に push（main ブランチ）
 2. Vercel 新規プロジェクト → Framework: Vite, Root: `frontend`, Build: `npm run build`, Output: `dist`
 3. 環境変数に `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` を設定
 4. デプロイ後のドメインを Supabase Auth の Site URL に反映
+5. Service Worker: `frontend/public/sw.js` が配信される（`src/pwa/sw-register.ts` で登録）
 
 ## 使い方の流れ
 1. サインアップ / ログイン（メール + パスワード）
