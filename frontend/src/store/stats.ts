@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "../lib/supabase";
-import { addDays, startOfWeek } from "../utils/date";
+import { addDays, startOfWeek, startOfDay } from "../utils/date";
 
 export type DailyStat = {
   date: string;
@@ -59,8 +59,8 @@ export const useStatsStore = create<State>((set) => ({
   },
   loadRange: async (period) => {
     set({ lastPeriod: period });
-    const today = new Date();
-    const nowIso = today.toISOString();
+    const today = startOfDay(new Date());
+    const nowIso = new Date().toISOString();
     let startDate = startOfWeek(today);
     let daysToFetch = 7;
 

@@ -98,33 +98,35 @@ const DashboardPage = () => {
         <SummaryCard title="おやつ合計" value={`${Math.round(data.reduce((s, d) => s + (d.treat_count ?? 0), 0))} 回`} />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm">
+        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
           <p className="mb-2 text-sm text-slate-600">散歩・あそびの推移</p>
-          <Line
-            data={walkPlay}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: { beginAtZero: true, min: 0 },
-              },
-            }}
-            className="!h-64"
-          />
+          <div className="h-64 w-full overflow-x-auto">
+            <Line
+              data={walkPlay}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: { beginAtZero: true, min: 0 },
+                },
+              }}
+            />
+          </div>
         </div>
-        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm">
+        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
           <p className="mb-2 text-sm text-slate-600">おやつ・ケアの回数</p>
-          <Bar
-            data={treatCare}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: { beginAtZero: true, min: 0 },
-              },
-            }}
-            className="!h-64"
-          />
+          <div className="h-64 w-full overflow-x-auto">
+            <Bar
+              data={treatCare}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: { beginAtZero: true, min: 0 },
+                },
+              }}
+            />
+          </div>
         </div>
       </div>
       {bestDay.label && (
