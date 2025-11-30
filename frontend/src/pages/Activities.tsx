@@ -30,7 +30,9 @@ const ActivitiesPage = () => {
 const activityLabels: Record<string, string> = {
   walk: "散歩",
   play: "あそび",
+  meal: "ごはん",
   treat: "おやつ",
+  poop: "うんち",
   care: "ケア",
 };
 
