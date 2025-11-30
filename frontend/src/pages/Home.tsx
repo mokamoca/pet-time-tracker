@@ -28,17 +28,14 @@ const HomePage = () => {
       <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-            <span className="text-xl">⚡</span>
-            1タップ記録
+            なにしよう？
           </h2>
-          <span className="text-[11px] rounded-full bg-primary/10 px-2 py-1 text-primary/80">サッと追加</span>
         </div>
         <QuickActions petId={activePetId} />
       </section>
       <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">
         <div className="mb-3 flex items-center gap-2">
-          <span className="text-xl">📊</span>
-          <h3 className="text-lg font-semibold text-primary">きょうの調子</h3>
+          <h3 className="text-lg font-semibold text-primary">本日の記録</h3>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:gap-3 text-sm text-slate-700">
           <StatCard label="散歩" value={`${daily?.walk_min ?? 0} 分`} flashValue={daily?.walk_min ?? 0} />
