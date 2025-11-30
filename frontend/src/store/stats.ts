@@ -25,10 +25,24 @@ type RangeResponse = {
   days: Array<DailyStat & { change_vs_last_week?: number | null }>;
 };
 
+const formatLocalDate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = `${date.getMonth() + 1}`.padStart(2, "0");
+  const d = `${date.getDate()}`.padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
 export const useStatsStore = create<State>((set) => ({
   daily: undefined,
   range: undefined,
   lastPeriod: "week",
+  // YYYY-MM-DD をローカルタイムで取得するユーティリティ
+  formatLocalDate: (date: Date) => {
+    const y = date.getFullYear();
+    const m = `${date.getMonth() + 1}`.padStart(2, "0");
+    const d = `${date.getDate()}`.padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  },
   loadDaily: async (date) => {
     const start = startOfDay(new Date(date));
     const end = addDays(start, 1);
@@ -89,8 +103,9 @@ export const useStatsStore = create<State>((set) => ({
     const days: State["range"]["days"] = [];
     for (let i = 0; i < daysToFetch; i++) {
       const day = addDays(startDate, i);
-      const dayStr = day.toISOString().slice(0, 10);
-      const dayActs = data?.filter((a) => a.started_at.slice(0, 10) === dayStr) ?? [];
+      const dayStr = formatLocalDate(day);
+      const dayActs =
+        data?.filter((a) => formatLocalDate(new Date(a.started_at)) === dayStr) ?? [];
       const agg = { walk_min: 0, play_min: 0, treat_count: 0, care_count: 0 };
       dayActs.forEach((a) => {
         if (a.type === "walk") agg.walk_min += a.amount ?? 0;
