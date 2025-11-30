@@ -76,7 +76,7 @@ export const useActivityStore = create<State>((set, get) => ({
     const today = new Date().toISOString().slice(0, 10);
     const stats = useStatsStore.getState();
     stats.loadDaily(today);
-    stats.loadRange("week");
+    stats.loadRange(stats.lastPeriod ?? "week");
   },
   update: async (id, payload) => {
     const { data, error } = await supabase.from("activities").update(payload).eq("id", id).select().single();
@@ -97,7 +97,7 @@ export const useActivityStore = create<State>((set, get) => ({
     for (const date of dates) {
       stats.loadDaily(date);
     }
-    stats.loadRange("week");
+    stats.loadRange(stats.lastPeriod ?? "week");
   },
   remove: async (id) => {
     const prev = get().activities.find((a) => a.id === id);
@@ -114,6 +114,6 @@ export const useActivityStore = create<State>((set, get) => ({
     for (const date of dates) {
       stats.loadDaily(date);
     }
-    stats.loadRange("week");
+    stats.loadRange(stats.lastPeriod ?? "week");
   },
 }));

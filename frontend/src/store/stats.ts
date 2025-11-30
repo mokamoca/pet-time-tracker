@@ -14,6 +14,7 @@ export type DailyStat = {
 type State = {
   daily?: DailyStat;
   range?: RangeResponse;
+  lastPeriod: "week" | "month" | "year" | "all";
   loadDaily: (date: string) => Promise<void>;
   loadRange: (period: "week" | "month" | "year" | "all") => Promise<void>;
 };
@@ -27,6 +28,7 @@ type RangeResponse = {
 export const useStatsStore = create<State>((set) => ({
   daily: undefined,
   range: undefined,
+  lastPeriod: "week",
   loadDaily: async (date) => {
     const start = new Date(date);
     const end = new Date(date);
@@ -56,6 +58,7 @@ export const useStatsStore = create<State>((set) => ({
     });
   },
   loadRange: async (period) => {
+    set({ lastPeriod: period });
     const today = new Date();
     const nowIso = today.toISOString();
     let startDate = startOfWeek(today);

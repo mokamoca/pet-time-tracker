@@ -100,11 +100,31 @@ const DashboardPage = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm">
           <p className="mb-2 text-sm text-slate-600">散歩・あそびの推移</p>
-          <Line data={walkPlay} />
+          <Line
+            data={walkPlay}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: { beginAtZero: true, min: 0 },
+              },
+            }}
+            className="!h-64"
+          />
         </div>
         <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm">
           <p className="mb-2 text-sm text-slate-600">おやつ・ケアの回数</p>
-          <Bar data={treatCare} />
+          <Bar
+            data={treatCare}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: { beginAtZero: true, min: 0 },
+              },
+            }}
+            className="!h-64"
+          />
         </div>
       </div>
       {bestDay.label && (
