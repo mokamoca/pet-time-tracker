@@ -30,9 +30,8 @@ export const useStatsStore = create<State>((set) => ({
   range: undefined,
   lastPeriod: "week",
   loadDaily: async (date) => {
-    const start = new Date(date);
-    const end = new Date(date);
-    end.setDate(end.getDate() + 1);
+    const start = startOfDay(new Date(date));
+    const end = addDays(start, 1);
     const { data, error } = await supabase
       .from("activities")
       .select("*")
@@ -101,6 +100,6 @@ export const useStatsStore = create<State>((set) => ({
       });
       days.push({ date: dayStr, ...agg, streak_info: null, change_vs_last_week: null });
     }
-    set({ range: { start: startDate.toISOString(), end: nowIso, days } });
+    set({ range: { start: startDate.toISOString(), end: tomorrowIso, days } });
   },
 }));
