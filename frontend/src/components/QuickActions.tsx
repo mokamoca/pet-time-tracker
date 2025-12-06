@@ -9,6 +9,21 @@ const QuickActions = ({ petId }: QuickActionProps) => {
   const logQuick = useActivityStore((s) => s.logQuick);
   const [walkStart, setWalkStart] = useState<Date | null>(null);
   const [playStart, setPlayStart] = useState<Date | null>(null);
+  const [tick, setTick] = useState(0);
+
+  // 軽いタイマー更新用
+  useState(() => {
+    const id = window.setInterval(() => setTick((t) => t + 1), 1000);
+    return () => window.clearInterval(id);
+  });
+
+  const formatElapsed = (start: Date | null) => {
+    if (!start) return "";
+    const diffSec = Math.max(0, Math.floor((Date.now() - start.getTime()) / 1000));
+    const m = Math.floor(diffSec / 60);
+    const s = diffSec % 60;
+    return `${m}m ${s.toString().padStart(2, "0")}s`;
+  };
 
   const handleTimerToggle = async (type: "walk" | "play") => {
     const isWalk = type === "walk";
@@ -41,16 +56,16 @@ const QuickActions = ({ petId }: QuickActionProps) => {
         />
         <ActionCard
           color="bg-[#4b89dc]"
-          title={walkStart ? "Walk" : "Walk"}
-          subtitle={walkStart ? "Stop" : "Start"}
+          title="Walk"
+          subtitle={walkStart ? `経過 ${formatElapsed(walkStart)}` : "Start"}
           onClick={() => handleTimerToggle("walk")}
           icon={walkStart ? "⏹" : "▶"}
           active={Boolean(walkStart)}
         />
         <ActionCard
           color="bg-[#e6b43c]"
-          title={playStart ? "Play" : "Play"}
-          subtitle={playStart ? "Stop" : "Start"}
+          title="Play"
+          subtitle={playStart ? `経過 ${formatElapsed(playStart)}` : "Start"}
           onClick={() => handleTimerToggle("play")}
           icon={playStart ? "⏹" : "▶"}
           active={Boolean(playStart)}
@@ -82,14 +97,25 @@ const ActionCard = ({
 }) => (
   <button
     onClick={onClick}
-    className={`${color} rounded-2xl px-3 py-4 text-left text-white shadow-md border border-black/5 active:scale-95 transition`}
+    className={`${color} rounded-2xl px-3 py-4 text-left text-white shadow-md border border-black/5 active:scale-95 transition ${
+      active ? "brightness-110" : ""
+    }`}
   >
     <div className="flex items-center justify-between">
       <span className="text-2xl">{icon}</span>
-      {active && <span className="rounded-full bg-white/30 px-2 py-0.5 text-[10px] font-semibold">Recording</span>}
+      {active && (
+        <span className="rounded-full bg-white/30 px-2 py-0.5 text-[10px] font-semibold text-white/90">
+          Recording
+        </span>
+      )}
     </div>
     <p className="mt-3 text-lg font-bold leading-none">{title}</p>
-    <p className="text-sm opacity-90">{subtitle}</p>
+    <p className={`text-sm opacity-90 ${active ? "text-white" : ""}`}>{subtitle}</p>
+    {active && (
+      <p className="mt-1 text-xs font-semibold text-white/90 flex items-center gap-1">
+        ⏹ 停止するにはもう一度タップ
+      </p>
+    )}
   </button>
 );
 
