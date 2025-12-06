@@ -4,11 +4,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#ff9eb0",
-        accent: "#ffd166",
-        bg: "#f7f1e3",
-        card: "#ffffff",
-        mint: "#a7e6c2",
+        primary: "#5c8f6b", // muted green
+        accent: "#c2aa8e",  // warm beige
+        bg: "#f6efe6",      // soft background
+        card: "#f9f4ec",    // card base
+        mint: "#d4b46b",    // warm accent for buttons
+        ink: "#2f2a25",     // text
       },
     },
   },

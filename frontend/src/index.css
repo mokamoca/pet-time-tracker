@@ -4,6 +4,8 @@
 
 body {
   font-family: "Inter", "M PLUS Rounded 1c", system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at 20% 20%, #f2e7d8 0, #f6efe6 30%, #f6efe6 60%, #f2e7d8 100%);
+  color: #2f2a25;
 }
 
 .no-scrollbar {
