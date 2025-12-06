@@ -26,7 +26,7 @@ const App = () => {
   }, [restoreSession]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-bg to-[#fdf3e6]">
+    <div className="min-h-screen bg-gradient-to-br from-bg to-[#fdf3e6] pb-20">
       <header className="sticky top-0 z-30 border-b border-white/70 bg-[#fdf3e6]/90 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2 text-lg font-bold text-primary tracking-tight">
@@ -104,6 +104,31 @@ const App = () => {
           <Route path="/dashboard" element={<Protected authed={authed} element={<DashboardPage />} />} />
         </Routes>
       </main>
+      {authed && (
+        <nav className="fixed bottom-2 left-1/2 z-40 w-[94%] max-w-3xl -translate-x-1/2 rounded-full border border-primary/10 bg-white/90 shadow-lg backdrop-blur px-4 py-2 flex items-center justify-around">
+          {navItems.map((item) => {
+            const active = location.pathname === item.to;
+            const iconMap: Record<string, string> = {
+              "/": "🏠",
+              "/setup": "🐾",
+              "/activities": "📝",
+              "/dashboard": "📊",
+            };
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`flex flex-col items-center text-[11px] font-semibold transition ${
+                  active ? "text-primary" : "text-slate-500"
+                }`}
+              >
+                <span className="text-xl leading-none">{iconMap[item.to] ?? "·"}</span>
+                <span className="leading-tight">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      )}
     </div>
   );
 };
