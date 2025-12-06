@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
 import { useStatsStore } from "../store/stats";
+import { usePetStore } from "../store/pets";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, BarElement);
 
@@ -23,11 +24,16 @@ const periodLabel: Record<"week" | "month" | "year" | "all", string> = {
 
 const DashboardPage = () => {
   const { range, loadRange } = useStatsStore();
+  const { selectedPetId, pets, load: loadPets } = usePetStore();
   const [period, setPeriod] = useState<"week" | "month" | "year" | "all">("week");
 
   useEffect(() => {
-    loadRange(period);
-  }, [loadRange, period]);
+    loadPets();
+  }, [loadPets]);
+
+  useEffect(() => {
+    loadRange(period, selectedPetId ?? undefined);
+  }, [loadRange, period, selectedPetId]);
 
   const data = range?.days ?? [];
   const labels = data.map((d) => d.date.slice(5));

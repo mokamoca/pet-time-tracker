@@ -1,35 +1,76 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import QuickActions from "../components/QuickActions";
 import { usePetStore } from "../store/pets";
 import { useStatsStore } from "../store/stats";
 
 const HomePage = () => {
-  const { pets, load } = usePetStore();
+  const { pets, load, selectedPetId, selectPet } = usePetStore();
   const { daily, loadDaily } = useStatsStore();
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
     load();
-    loadDaily(today);
-  }, [load, loadDaily, today]);
+  }, [load]);
 
-  const activePetId = pets[0]?.id;
+  useEffect(() => {
+    if (selectedPetId || pets.length > 0) {
+      const petId = selectedPetId ?? pets[0]?.id;
+      if (petId) {
+        selectPet(petId);
+        loadDaily(today, petId);
+      }
+    }
+  }, [selectedPetId, pets, loadDaily, today, selectPet]);
+
+  const activePetId = selectedPetId ?? pets[0]?.id;
 
   return (
     <div className="space-y-5 pb-4">
-      <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10 flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-2xl">🐕</div>
-        <div>
-          <h2 className="text-lg font-semibold text-primary">今日のわんメモ</h2>
-          <p className="text-xs text-slate-600">すぐ書ける、すぐ振り返る。</p>
+      {pets.length === 0 ? (
+        <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10 flex flex-col gap-3">
+          <h2 className="text-lg font-semibold text-primary">ペットを登録しましょう</h2>
+          <p className="text-sm text-slate-600">まずはペット登録ページから追加してください。</p>
+          <Link
+            to="/setup"
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow"
+          >
+            ペットを登録する
+          </Link>
         </div>
-      </div>
+      ) : (
+        <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <p className="text-xs text-slate-500">表示中のペット</p>
+              <h2 className="text-lg font-semibold text-primary">
+                {pets.find((p) => p.id === activePetId)?.name ?? "ペット未選択"}
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {pets.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => selectPet(p.id)}
+                  className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
+                    p.id === activePetId
+                      ? "bg-primary text-white border-primary"
+                      : "bg-white text-primary border-primary/30"
+                  }`}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-primary flex items-center gap-2">なにしよう？</h2>
         </div>
-        <QuickActions petId={activePetId} />
+        <QuickActions petId={activePetId ?? undefined} />
       </section>
 
       <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">

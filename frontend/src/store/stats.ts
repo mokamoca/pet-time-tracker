@@ -17,8 +17,8 @@ type State = {
   daily?: DailyStat;
   range?: RangeResponse;
   lastPeriod: "week" | "month" | "year" | "all";
-  loadDaily: (date: string) => Promise<void>;
-  loadRange: (period: "week" | "month" | "year" | "all") => Promise<void>;
+  loadDaily: (date: string, petId?: number | null) => Promise<void>;
+  loadRange: (period: "week" | "month" | "year" | "all", petId?: number | null) => Promise<void>;
 };
 
 type RangeResponse = {
@@ -62,13 +62,17 @@ export const useStatsStore = create<State>((set) => ({
     const d = `${date.getDate()}`.padStart(2, "0");
     return `${y}-${m}-${d}`;
   },
-  loadDaily: async (date) => {
+  loadDaily: async (date, petId) => {
     const { utcStart, utcEnd } = getLocalDayRangeUtc(date);
-    const { data, error } = await supabase
+    let query = supabase
       .from("activities")
       .select("*")
       .gte("started_at", utcStart.toISOString())
       .lt("started_at", utcEnd.toISOString());
+    if (petId) {
+      query = query.eq("pet_id", petId);
+    }
+    const { data, error } = await query;
     if (error) {
       console.error(error);
       return;
@@ -90,7 +94,7 @@ export const useStatsStore = create<State>((set) => ({
       },
     });
   },
-  loadRange: async (period) => {
+  loadRange: async (period, petId) => {
     set({ lastPeriod: period });
     const todayLocal = startOfDay(new Date());
     const offsetMs = todayLocal.getTimezoneOffset() * 60000;
@@ -116,11 +120,15 @@ export const useStatsStore = create<State>((set) => ({
 
     const startUtc = new Date(startDateLocal.getTime() - offsetMs);
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("activities")
       .select("*")
       .gte("started_at", startUtc.toISOString())
       .lt("started_at", tomorrowUtc.toISOString());
+    if (petId) {
+      query = query.eq("pet_id", petId);
+    }
+    const { data, error } = await query;
     if (error) {
       console.error(error);
       return;

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Activity, useActivityStore } from "../store/activities";
+import { usePetStore } from "../store/pets";
 
 const activityLabels: Record<string, string> = {
   walk: "散歩",
@@ -31,11 +32,24 @@ const displayDate = (iso: string) => {
 
 const ActivitiesPage = () => {
   const { activities, load, update, remove } = useActivityStore();
+  const { pets, selectedPetId, load: loadPets } = usePetStore();
   const [limit] = useState(20);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    loadPets();
+  }, [loadPets]);
+
+  useEffect(() => {
+    load(selectedPetId ?? undefined);
+  }, [load, selectedPetId]);
+
+  if (!selectedPetId || pets.length === 0) {
+    return (
+      <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
+        <p className="text-sm text-slate-600">ペットが未選択です。ホーム画面でペットを選択してください。</p>
+      </div>
+    );
+  }
 
   const recentActivities = useMemo(() => activities.slice(0, limit), [activities, limit]);
 

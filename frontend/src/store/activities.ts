@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { supabase } from "../lib/supabase";
 import { useStatsStore } from "./stats";
+import { usePetStore } from "./pets";
 
 const activityTypes = ["walk", "play", "meal", "treat", "poop", "care"] as const;
 const activityUnits = ["min", "count"] as const;
@@ -24,6 +25,7 @@ export type Activity = {
 
 type State = {
   activities: Activity[];
+  load: (petId?: number | null) => Promise<void>;
   logQuick: (
     type: ActivityType,
     amount: number,
@@ -32,18 +34,16 @@ type State = {
     started_at?: string,
     ended_at?: string,
   ) => Promise<void>;
-  load: () => Promise<void>;
   update: (id: number, payload: Partial<Pick<Activity, "amount" | "started_at" | "ended_at">>) => Promise<void>;
   remove: (id: number) => Promise<void>;
 };
 
 export const useActivityStore = create<State>((set, get) => ({
   activities: [],
-  load: async () => {
-    const { data, error } = await supabase
-      .from("activities")
-      .select("*")
-      .order("started_at", { ascending: false });
+  load: async (petId) => {
+    let query = supabase.from("activities").select("*").order("started_at", { ascending: false });
+    if (petId) query = query.eq("pet_id", petId);
+    const { data, error } = await query;
     if (error) {
       console.error(error);
       return;
@@ -72,7 +72,7 @@ export const useActivityStore = create<State>((set, get) => ({
       .insert({
         type,
         amount,
-        unit,
+        unit: useUnit,
         pet_id,
         started_at: started_at ?? now,
         ended_at: ended_at ?? started_at ?? now,
@@ -87,11 +87,11 @@ export const useActivityStore = create<State>((set, get) => ({
     }
     set((state) => ({ activities: [data, ...state.activities] }));
 
-    // 直後にサマリを更新
     const today = new Date().toISOString().slice(0, 10);
     const stats = useStatsStore.getState();
-    stats.loadDaily(today);
-    stats.loadRange(stats.lastPeriod ?? "week");
+    const selectedPetId = usePetStore.getState().selectedPetId;
+    stats.loadDaily(today, selectedPetId);
+    stats.loadRange(stats.lastPeriod ?? "week", selectedPetId);
   },
   update: async (id, payload) => {
     const { data, error } = await supabase.from("activities").update(payload).eq("id", id).select().single();
@@ -105,14 +105,15 @@ export const useActivityStore = create<State>((set, get) => ({
     }));
     const dates = new Set<string>();
     const stats = useStatsStore.getState();
+    const selectedPetId = usePetStore.getState().selectedPetId;
     const today = new Date().toISOString().slice(0, 10);
     dates.add(today);
     if (prev?.started_at) dates.add(prev.started_at.slice(0, 10));
     if (data?.started_at) dates.add(data.started_at.slice(0, 10));
     for (const date of dates) {
-      stats.loadDaily(date);
+      stats.loadDaily(date, selectedPetId);
     }
-    stats.loadRange(stats.lastPeriod ?? "week");
+    stats.loadRange(stats.lastPeriod ?? "week", selectedPetId);
   },
   remove: async (id) => {
     const prev = get().activities.find((a) => a.id === id);
@@ -124,11 +125,12 @@ export const useActivityStore = create<State>((set, get) => ({
     set((state) => ({ activities: state.activities.filter((a) => a.id !== id) }));
     const today = new Date().toISOString().slice(0, 10);
     const stats = useStatsStore.getState();
+    const selectedPetId = usePetStore.getState().selectedPetId;
     const dates = new Set<string>([today]);
     if (prev?.started_at) dates.add(prev.started_at.slice(0, 10));
     for (const date of dates) {
-      stats.loadDaily(date);
+      stats.loadDaily(date, selectedPetId);
     }
-    stats.loadRange(stats.lastPeriod ?? "week");
+    stats.loadRange(stats.lastPeriod ?? "week", selectedPetId);
   },
 }));
