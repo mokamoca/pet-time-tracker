@@ -39,7 +39,9 @@ const HomePage = () => {
         <div className="grid grid-cols-2 gap-2 sm:gap-3 text-sm text-slate-700">
           <StatCard label="散歩" value={`${daily?.walk_min ?? 0} 分`} flashValue={daily?.walk_min ?? 0} />
           <StatCard label="遊び" value={`${daily?.play_min ?? 0} 分`} flashValue={daily?.play_min ?? 0} />
+          <StatCard label="ごはん" value={`${daily?.meal_count ?? 0} 回`} flashValue={daily?.meal_count ?? 0} />
           <StatCard label="おやつ" value={`${daily?.treat_count ?? 0} 回`} flashValue={daily?.treat_count ?? 0} />
+          <StatCard label="うんち" value={`${daily?.poop_count ?? 0} 回`} flashValue={daily?.poop_count ?? 0} />
           <StatCard label="ケア" value={`${daily?.care_count ?? 0} 回`} flashValue={daily?.care_count ?? 0} />
         </div>
         <p className="mt-2 text-xs text-green-600">

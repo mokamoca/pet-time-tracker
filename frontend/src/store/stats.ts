@@ -6,7 +6,9 @@ export type DailyStat = {
   date: string;
   walk_min: number;
   play_min: number;
+  meal_count: number;
   treat_count: number;
+  poop_count: number;
   care_count: number;
   streak_info?: number | null;
 };
@@ -71,11 +73,13 @@ export const useStatsStore = create<State>((set) => ({
       console.error(error);
       return;
     }
-    const aggregate = { walk_min: 0, play_min: 0, treat_count: 0, care_count: 0 };
+    const aggregate = { walk_min: 0, play_min: 0, meal_count: 0, treat_count: 0, poop_count: 0, care_count: 0 };
     data?.forEach((a) => {
       if (a.type === "walk") aggregate.walk_min += a.amount ?? 0;
       if (a.type === "play") aggregate.play_min += a.amount ?? 0;
+      if (a.type === "meal") aggregate.meal_count += a.amount ?? 0;
       if (a.type === "treat") aggregate.treat_count += a.amount ?? 0;
+      if (a.type === "poop") aggregate.poop_count += a.amount ?? 0;
       if (a.type === "care") aggregate.care_count += a.amount ?? 0;
     });
     set({
@@ -127,11 +131,13 @@ export const useStatsStore = create<State>((set) => ({
       const dayLocal = addDays(startDateLocal, i);
       const dayStr = formatLocalDate(dayLocal);
       const dayActs = data?.filter((a) => isoToLocalDateStr(a.started_at) === dayStr) ?? [];
-      const agg = { walk_min: 0, play_min: 0, treat_count: 0, care_count: 0 };
+      const agg = { walk_min: 0, play_min: 0, meal_count: 0, treat_count: 0, poop_count: 0, care_count: 0 };
       dayActs.forEach((a) => {
         if (a.type === "walk") agg.walk_min += a.amount ?? 0;
         if (a.type === "play") agg.play_min += a.amount ?? 0;
+        if (a.type === "meal") agg.meal_count += a.amount ?? 0;
         if (a.type === "treat") agg.treat_count += a.amount ?? 0;
+        if (a.type === "poop") agg.poop_count += a.amount ?? 0;
         if (a.type === "care") agg.care_count += a.amount ?? 0;
       });
       days.push({ date: dayStr, ...agg, streak_info: null, change_vs_last_week: null });

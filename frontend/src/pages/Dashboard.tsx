@@ -50,13 +50,23 @@ const DashboardPage = () => {
     ],
   };
 
-  const treatCare = {
+  const counts = {
     labels,
     datasets: [
+      {
+        label: "ごはん(回)",
+        data: data.map((d) => d.meal_count ?? 0),
+        backgroundColor: "#ffcf8d",
+      },
       {
         label: "おやつ(回)",
         data: data.map((d) => d.treat_count ?? 0),
         backgroundColor: "#ffd166",
+      },
+      {
+        label: "うんち(回)",
+        data: data.map((d) => d.poop_count ?? 0),
+        backgroundColor: "#f4c1d9",
       },
       {
         label: "ケア(回)",
@@ -68,7 +78,13 @@ const DashboardPage = () => {
 
   const bestDay = data.reduce(
     (acc, d) => {
-      const score = (d.walk_min ?? 0) + (d.play_min ?? 0) + (d.treat_count ?? 0);
+      const score =
+        (d.walk_min ?? 0) +
+        (d.play_min ?? 0) +
+        (d.meal_count ?? 0) +
+        (d.treat_count ?? 0) +
+        (d.poop_count ?? 0) +
+        (d.care_count ?? 0);
       return score > acc.score ? { score, label: d.date } : acc;
     },
     { score: 0, label: "" },
@@ -95,10 +111,13 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
         <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} />
         <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} />
+        <SummaryCard title="ごはん合計" value={`${Math.round(data.reduce((s, d) => s + (d.meal_count ?? 0), 0))} 回`} />
         <SummaryCard title="おやつ合計" value={`${Math.round(data.reduce((s, d) => s + (d.treat_count ?? 0), 0))} 回`} />
+        <SummaryCard title="うんち合計" value={`${Math.round(data.reduce((s, d) => s + (d.poop_count ?? 0), 0))} 回`} />
+        <SummaryCard title="ケア合計" value={`${Math.round(data.reduce((s, d) => s + (d.care_count ?? 0), 0))} 回`} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -118,10 +137,10 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
-          <p className="mb-2 text-sm text-slate-600">おやつ・ケアの回数</p>
+          <p className="mb-2 text-sm text-slate-600">ごはん・おやつ・うんち・ケア</p>
           <div className="h-64 w-full overflow-x-auto">
             <Bar
-              data={treatCare}
+              data={counts}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
