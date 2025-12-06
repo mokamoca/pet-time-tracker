@@ -72,7 +72,7 @@ const QuickActions = ({ petId, mealProgress = 0, mealLabel = "" }: QuickActionPr
         />
       </div>
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <MiniAction label="Treat" icon="🦴" onClick={() => handleCount("treat")} />
+        <MiniAction label="おやつ" icon="🦴" onClick={() => handleCount("treat")} />
         <MiniAction label="うんち" icon="💩" onClick={() => handleCount("poop")} />
         <MiniAction label="ケア" icon="🐾" onClick={() => handleCount("care")} />
       </div>
@@ -111,11 +111,6 @@ const ActionCard = ({
     </div>
     <p className="mt-3 text-lg font-bold leading-none">{title}</p>
     <p className={`text-sm opacity-90 ${active ? "text-white" : ""}`}>{subtitle}</p>
-    {active && (
-      <p className="mt-1 text-xs font-semibold text-white/90 flex items-center gap-1">
-        ⏹ 停止するにはもう一度タップ
-      </p>
-    )}
   </button>
 );
 

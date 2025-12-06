@@ -39,7 +39,7 @@ const HomePage = () => {
           </Link>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10 space-y-4">
+        <>
           <div className="flex items-center justify-center gap-3">
             <div className="flex -space-x-2 overflow-x-auto no-scrollbar px-2">
               {pets.map((p) => (
@@ -59,7 +59,7 @@ const HomePage = () => {
               ))}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-2 mt-3">
             <div className="h-20 w-20 rounded-full border-4 border-primary/40 overflow-hidden flex items-center justify-center shadow">
               {pets.find((p) => p.id === activePetId)?.photo_url ? (
                 <img
@@ -74,13 +74,10 @@ const HomePage = () => {
             <h2 className="text-xl font-bold text-ink">{pets.find((p) => p.id === activePetId)?.name ?? "ペット未選択"}</h2>
             <p className="text-xs text-slate-500">Active</p>
           </div>
-        </div>
+        </>
       )}
 
-      <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-primary flex items-center gap-2">なにしよう？</h2>
-        </div>
+      <section>
         <QuickActions
           petId={activePetId ?? undefined}
           mealProgress={daily ? Math.min(1, (daily.meal_count ?? 0) / 2) : 0}
