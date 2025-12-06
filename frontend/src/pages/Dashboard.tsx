@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
 import {
+  BarElement,
+  CategoryScale,
   Chart as ChartJS,
+  Legend,
+  LinearScale,
   LineElement,
   PointElement,
-  LinearScale,
-  CategoryScale,
   Tooltip,
-  Legend,
-  BarElement,
 } from "chart.js";
-import { Line, Bar } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import { useStatsStore } from "../store/stats";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, BarElement);
+
+const periodLabel: Record<"week" | "month" | "year" | "all", string> = {
+  week: "1週間",
+  month: "1か月",
+  year: "1年",
+  all: "ぜんぶ",
+};
 
 const DashboardPage = () => {
   const { range, loadRange } = useStatsStore();
@@ -24,6 +31,7 @@ const DashboardPage = () => {
 
   const data = range?.days ?? [];
   const labels = data.map((d) => d.date.slice(5));
+
   const walkPlay = {
     labels,
     datasets: [
@@ -41,6 +49,7 @@ const DashboardPage = () => {
       },
     ],
   };
+
   const treatCare = {
     labels,
     datasets: [
@@ -65,13 +74,6 @@ const DashboardPage = () => {
     { score: 0, label: "" },
   );
 
-  const periodLabel: Record<"week" | "month" | "year" | "all", string> = {
-    week: "1週間",
-    month: "1か月",
-    year: "1年",
-    all: "ぜんぶ",
-  };
-
   return (
     <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -92,11 +94,13 @@ const DashboardPage = () => {
           ))}
         </div>
       </div>
+
       <div className="grid gap-3 md:grid-cols-3">
         <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} />
         <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} />
         <SummaryCard title="おやつ合計" value={`${Math.round(data.reduce((s, d) => s + (d.treat_count ?? 0), 0))} 回`} />
       </div>
+
       <div className="grid gap-4 md:grid-cols-2">
         <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
           <p className="mb-2 text-sm text-slate-600">散歩・あそびの推移</p>
@@ -129,9 +133,10 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
+
       {bestDay.label && (
         <div className="rounded-xl bg-primary/10 p-3 text-sm text-primary">
-          いちばん充実した日: {bestDay.label}（スコア {Math.round(bestDay.score)}）
+          ベストな日: {bestDay.label} (スコア {Math.round(bestDay.score)})
         </div>
       )}
     </div>

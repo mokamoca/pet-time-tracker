@@ -104,8 +104,7 @@ export const useStatsStore = create<State>((set) => ({
     for (let i = 0; i < daysToFetch; i++) {
       const day = addDays(startDate, i);
       const dayStr = formatLocalDate(day);
-      const dayActs =
-        data?.filter((a) => formatLocalDate(new Date(a.started_at)) === dayStr) ?? [];
+      const dayActs = data?.filter((a) => formatLocalDate(new Date(a.started_at)) === dayStr) ?? [];
       const agg = { walk_min: 0, play_min: 0, treat_count: 0, care_count: 0 };
       dayActs.forEach((a) => {
         if (a.type === "walk") agg.walk_min += a.amount ?? 0;

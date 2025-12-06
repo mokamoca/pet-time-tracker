@@ -1,8 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import QuickActions from "../components/QuickActions";
 import { usePetStore } from "../store/pets";
 import { useStatsStore } from "../store/stats";
-import { useState, useRef } from "react";
 
 const HomePage = () => {
   const { pets, load } = usePetStore();
@@ -25,14 +24,14 @@ const HomePage = () => {
           <p className="text-xs text-slate-600">すぐ書ける、すぐ振り返る。</p>
         </div>
       </div>
+
       <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-            なにしよう？
-          </h2>
+          <h2 className="text-lg font-semibold text-primary flex items-center gap-2">なにしよう？</h2>
         </div>
         <QuickActions petId={activePetId} />
       </section>
+
       <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">
         <div className="mb-3 flex items-center gap-2">
           <h3 className="text-lg font-semibold text-primary">本日の記録</h3>
@@ -44,7 +43,7 @@ const HomePage = () => {
           <StatCard label="ケア" value={`${daily?.care_count ?? 0} 回`} flashValue={daily?.care_count ?? 0} />
         </div>
         <p className="mt-2 text-xs text-green-600">
-          {daily?.streak_info ? `連続 ${daily.streak_info} 日キープ中！` : "最初の記録をつけてみよう"}
+          {daily?.streak_info ? `連続 ${daily.streak_info} 日目！` : "最初の記録をつけてみよう"}
         </p>
       </section>
     </div>

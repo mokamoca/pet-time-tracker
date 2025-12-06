@@ -1,5 +1,5 @@
-import { useActivityStore } from "../store/activities";
 import { useState } from "react";
+import { useActivityStore } from "../store/activities";
 
 type QuickActionProps = {
   petId?: number;
@@ -70,7 +70,6 @@ const QuickActions = ({ petId }: QuickActionProps) => {
               const isTimer = action.type === "walk" || action.type === "play";
               const isWalk = action.type === "walk";
               const isPlay = action.type === "play";
-              const label = action.label;
               const active = (isWalk && walkStart) || (isPlay && playStart);
               return (
                 <button
@@ -80,7 +79,7 @@ const QuickActions = ({ petId }: QuickActionProps) => {
                     isTimer ? handleTimerToggle(action.type) : handleCount(action.type as "meal" | "treat" | "poop" | "care")
                   }
                 >
-                  {isTimer ? (active ? "ストップ" : label) : label}
+                  {isTimer && active ? "ストップ" : action.label}
                 </button>
               );
             })}

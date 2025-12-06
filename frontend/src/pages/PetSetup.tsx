@@ -51,13 +51,11 @@ const PetSetupPage = () => {
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="ペットの名前（例: もも / ぽち）"
+          placeholder="ペットの名前（例：もも / ぽち）"
           className="w-full rounded-lg border border-primary/20 bg-white p-3 text-slate-800 placeholder-slate-400"
           required
         />
-        <button className="w-full rounded-lg bg-primary py-3 font-semibold text-white shadow">
-          保存してはじめる
-        </button>
+        <button className="w-full rounded-lg bg-primary py-3 font-semibold text-white shadow">保存してはじめる</button>
       </form>
       {hasPets && (
         <div className="space-y-3">
@@ -88,7 +86,7 @@ const PetSetupPage = () => {
                     className="flex h-10 w-10 items-center justify-center rounded-lg border border-red-200 bg-white text-red-500 text-lg shadow-sm active:scale-95 transition"
                     aria-label="削除"
                   >
-                    🗑️
+                    🗑
                   </button>
                 </div>
               </div>

@@ -8,6 +8,13 @@ import ActivitiesPage from "./pages/Activities";
 import { useAuthStore } from "./store/auth";
 import { usePetStore } from "./store/pets";
 
+const navItems = [
+  { to: "/", label: "ホーム", icon: "🏠" },
+  { to: "/setup", label: "ペット登録", icon: "🐾" },
+  { to: "/activities", label: "記録編集", icon: "✏️" },
+  { to: "/dashboard", label: "ダッシュボード", icon: "📊" },
+];
+
 const App = () => {
   const { session, logout, restoreSession } = useAuthStore();
   const location = useLocation();
@@ -17,13 +24,6 @@ const App = () => {
   useEffect(() => {
     restoreSession();
   }, [restoreSession]);
-
-  const navItems = [
-    { to: "/", label: "ホーム", icon: "🏠" },
-    { to: "/setup", label: "ペット登録", icon: "🐾" },
-    { to: "/activities", label: "記録編集", icon: "✏️" },
-    { to: "/dashboard", label: "ダッシュボード", icon: "📊" },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg to-[#fdf3e6]">
@@ -123,7 +123,7 @@ const Protected = ({ authed, element }: { authed: boolean; element: JSX.Element 
 
   if (!authed) return <Navigate to="/auth" replace />;
 
-  // ペット未登録時はセットアップへ案内（それ以外は遷移を許可）
+  // ペット未登録時はセットアップページへ誘導し、それ以外の遷移を防ぐ
   if (loaded && !hasPets && location.pathname !== "/setup") {
     return <Navigate to="/setup" replace />;
   }

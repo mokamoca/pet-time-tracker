@@ -29,12 +29,14 @@ const AuthPage = () => {
     }
   };
 
+  const title = mode === "login" ? "おかえり！" : "はじめまして！";
+  const description =
+    mode === "login" ? "今日の記録からスタートしよう。" : "かんたん登録ですぐ使えます。";
+
   return (
     <div className="mx-auto max-w-md rounded-2xl bg-white p-6 shadow-xl border border-primary/10">
-      <h1 className="text-2xl font-bold text-primary mb-2">
-        {mode === "login" ? "おかえり！" : "ようこそ！"}
-      </h1>
-      <p className="text-sm text-slate-700 mb-4">今日の記録からスタートしよう。</p>
+      <h1 className="text-2xl font-bold text-primary mb-2">{title}</h1>
+      <p className="text-sm text-slate-700 mb-4">{description}</p>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <input
           value={email}
@@ -55,14 +57,14 @@ const AuthPage = () => {
         />
         {error && <p className="text-sm text-rose-400">{error}</p>}
         <button className="w-full rounded-lg bg-primary py-3 font-semibold text-white">
-          {mode === "login" ? "ログイン" : "アカウント作成"}
+          {mode === "login" ? "ログイン" : "アカウントを作成"}
         </button>
       </form>
       <button
         className="mt-4 text-sm text-slate-600 underline"
         onClick={() => setMode(mode === "login" ? "signup" : "login")}
       >
-        {mode === "login" ? "初めての方はこちら" : "すでにアカウントをお持ちですか？"}
+        {mode === "login" ? "初めての方はこちら" : "すでにアカウントをお持ちの方はこちら"}
       </button>
     </div>
   );

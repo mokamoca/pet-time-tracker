@@ -1,31 +1,5 @@
-import { useEffect, useMemo, useState, useRef, useCallback } from "react";
-import { useActivityStore, Activity } from "../store/activities";
-
-const ActivitiesPage = () => {
-  const { activities, load, update, remove } = useActivityStore();
-  const [limit] = useState(20);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  const recentActivities = useMemo(() => activities.slice(0, limit), [activities, limit]);
-
-  return (
-    <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
-      <div className="flex items-center gap-2">
-        <span className="text-xl">📝</span>
-        <h2 className="text-lg font-semibold text-primary">最近の記録</h2>
-      </div>
-      <div className="space-y-3">
-        {recentActivities.length === 0 && <p className="text-sm text-slate-600">まだ記録がありません。</p>}
-        {recentActivities.map((activity) => (
-          <ActivityRow key={activity.id} activity={activity} onSave={update} onDelete={remove} />
-        ))}
-      </div>
-    </div>
-  );
-};
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Activity, useActivityStore } from "../store/activities";
 
 const activityLabels: Record<string, string> = {
   walk: "散歩",
@@ -53,6 +27,32 @@ const applyTimeToIso = (iso: string, time: string) => {
 
 const displayDate = (iso: string) => {
   return new Date(iso).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" });
+};
+
+const ActivitiesPage = () => {
+  const { activities, load, update, remove } = useActivityStore();
+  const [limit] = useState(20);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const recentActivities = useMemo(() => activities.slice(0, limit), [activities, limit]);
+
+  return (
+    <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📝</span>
+        <h2 className="text-lg font-semibold text-primary">最近の記録</h2>
+      </div>
+      <div className="space-y-3">
+        {recentActivities.length === 0 && <p className="text-sm text-slate-600">まだ記録がありません</p>}
+        {recentActivities.map((activity) => (
+          <ActivityRow key={activity.id} activity={activity} onSave={update} onDelete={remove} />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const ActivityRow = ({
