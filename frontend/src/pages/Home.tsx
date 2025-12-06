@@ -40,15 +40,18 @@ const HomePage = () => {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-center gap-3">
-            <div className="flex -space-x-2 overflow-x-auto no-scrollbar px-2">
-              {pets.map((p) => (
+          <div className="flex items-center justify-center gap-3 px-2">
+            {pets.map((p) => {
+              const isActive = p.id === activePetId;
+              return (
                 <button
                   key={p.id}
                   onClick={() => selectPet(p.id)}
-                  className={`h-12 w-12 rounded-full border ${
-                    p.id === activePetId ? "border-primary ring-2 ring-primary/50" : "border-primary/20"
-                  } overflow-hidden flex-shrink-0`}
+                  className={`rounded-full border overflow-hidden flex-shrink-0 transition ${
+                    isActive
+                      ? "h-16 w-16 border-primary ring-2 ring-primary/50"
+                      : "h-12 w-12 border-primary/20"
+                  }`}
                 >
                   {p.photo_url ? (
                     <img src={p.photo_url} alt={p.name} className="h-full w-full object-cover" />
@@ -56,8 +59,8 @@ const HomePage = () => {
                     <span className="flex h-full w-full items-center justify-center text-lg">🐾</span>
                   )}
                 </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
           <div className="flex flex-col items-center gap-1 mt-2">
             <h2 className="text-xl font-bold text-ink">{pets.find((p) => p.id === activePetId)?.name ?? "ペット未選択"}</h2>
