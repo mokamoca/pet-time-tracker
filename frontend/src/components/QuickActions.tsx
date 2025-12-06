@@ -3,9 +3,11 @@ import { useActivityStore } from "../store/activities";
 
 type QuickActionProps = {
   petId?: number;
+  mealProgress?: number; // 0.0 - 1.0
+  mealLabel?: string;
 };
 
-const QuickActions = ({ petId }: QuickActionProps) => {
+const QuickActions = ({ petId, mealProgress = 0, mealLabel = "" }: QuickActionProps) => {
   const logQuick = useActivityStore((s) => s.logQuick);
   const [walkStart, setWalkStart] = useState<Date | null>(null);
   const [playStart, setPlayStart] = useState<Date | null>(null);
@@ -45,14 +47,12 @@ const QuickActions = ({ petId }: QuickActionProps) => {
   };
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <ActionCard
-          color="bg-[#d07355]"
-          title="Meal"
-          subtitle="Start"
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <MealCard
+          progress={Math.max(0, Math.min(1, mealProgress))}
+          label={mealLabel || "Meal"}
           onClick={() => handleCount("meal")}
-          icon="🍽"
         />
         <ActionCard
           color="bg-[#4b89dc]"
@@ -118,6 +118,31 @@ const ActionCard = ({
     )}
   </button>
 );
+
+const MealCard = ({ progress, label, onClick }: { progress: number; label: string; onClick: () => void }) => {
+  const percent = Math.round(progress * 100);
+  const angle = progress * 360;
+  return (
+    <button
+      onClick={onClick}
+      className="row-span-2 rounded-3xl bg-[#bf7053] text-white shadow-md border border-black/5 px-4 py-5 flex flex-col justify-between min-h-[220px] active:scale-95 transition"
+    >
+      <div className="text-left">
+        <p className="text-sm opacity-80">Meal</p>
+      </div>
+      <div className="mx-auto relative h-28 w-28 rounded-full flex items-center justify-center"
+        style={{ background: `conic-gradient(#ffffff ${angle}deg, rgba(255,255,255,0.2) ${angle}deg)` }}>
+        <div className="absolute inset-2 rounded-full bg-[#bf7053] flex items-center justify-center">
+          <div className="text-center leading-tight">
+            <p className="text-sm opacity-90">{label || "Meal"}</p>
+            <p className="text-lg font-bold">{percent >= 100 ? "2/2" : `${(progress * 2).toFixed(1)}/2`}</p>
+          </div>
+        </div>
+      </div>
+      <p className="text-sm opacity-90 text-center">タップで記録</p>
+    </button>
+  );
+};
 
 const MiniAction = ({ label, icon, onClick }: { label: string; icon: string; onClick: () => void }) => (
   <button

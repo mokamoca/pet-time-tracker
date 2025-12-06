@@ -39,9 +39,28 @@ const HomePage = () => {
           </Link>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10 space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="h-14 w-14 rounded-full bg-primary/10 overflow-hidden flex items-center justify-center border border-primary/10">
+        <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10 space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex -space-x-2 overflow-x-auto no-scrollbar px-2">
+              {pets.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => selectPet(p.id)}
+                  className={`h-12 w-12 rounded-full border ${
+                    p.id === activePetId ? "border-primary ring-2 ring-primary/50" : "border-primary/20"
+                  } overflow-hidden flex-shrink-0`}
+                >
+                  {p.photo_url ? (
+                    <img src={p.photo_url} alt={p.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-lg">🐾</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-20 w-20 rounded-full border-4 border-primary/40 overflow-hidden flex items-center justify-center shadow">
               {pets.find((p) => p.id === activePetId)?.photo_url ? (
                 <img
                   src={pets.find((p) => p.id === activePetId)!.photo_url!}
@@ -49,35 +68,11 @@ const HomePage = () => {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <span className="text-xl">🐾</span>
+                <span className="text-2xl">🐾</span>
               )}
             </div>
-            <div>
-              <p className="text-xs text-slate-500">表示中のペット</p>
-              <h2 className="text-lg font-semibold text-primary">
-                {pets.find((p) => p.id === activePetId)?.name ?? "ペット未選択"}
-              </h2>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {pets.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => selectPet(p.id)}
-                className={`flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold transition ${
-                  p.id === activePetId ? "bg-primary text-white border-primary" : "bg-white text-primary border-primary/30"
-                }`}
-              >
-                <span className="h-6 w-6 rounded-full bg-primary/10 overflow-hidden flex items-center justify-center">
-                  {p.photo_url ? (
-                    <img src={p.photo_url} alt={p.name} className="h-full w-full object-cover" />
-                  ) : (
-                    "🐾"
-                  )}
-                </span>
-                {p.name}
-              </button>
-            ))}
+            <h2 className="text-xl font-bold text-ink">{pets.find((p) => p.id === activePetId)?.name ?? "ペット未選択"}</h2>
+            <p className="text-xs text-slate-500">Active</p>
           </div>
         </div>
       )}
@@ -86,7 +81,11 @@ const HomePage = () => {
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-primary flex items-center gap-2">なにしよう？</h2>
         </div>
-        <QuickActions petId={activePetId ?? undefined} />
+        <QuickActions
+          petId={activePetId ?? undefined}
+          mealProgress={daily ? Math.min(1, (daily.meal_count ?? 0) / 2) : 0}
+          mealLabel={daily ? `${daily.meal_count ?? 0}/2 meals` : "Meal"}
+        />
       </section>
 
       <section className="rounded-2xl bg-white p-4 sm:p-5 shadow-lg border border-primary/10">
