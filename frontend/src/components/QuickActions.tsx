@@ -5,37 +5,6 @@ type QuickActionProps = {
   petId?: number;
 };
 
-type Action = {
-  type: "walk" | "play" | "meal" | "treat" | "poop" | "care";
-  label: string;
-  unit: "min" | "count";
-  color: string;
-};
-
-const sections: { title: string; actions: Action[] }[] = [
-  {
-    title: "なにしよう？",
-    actions: [
-      { type: "walk", label: "おさんぽ", unit: "min", color: "bg-primary/80" },
-      { type: "play", label: "あそび", unit: "min", color: "bg-mint" },
-    ],
-  },
-  {
-    title: "おなかすいた？",
-    actions: [
-      { type: "meal", label: "ごはん", unit: "count", color: "bg-[#ffcf8d]" },
-      { type: "treat", label: "おやつ", unit: "count", color: "bg-accent" },
-    ],
-  },
-  {
-    title: "げんきかな？",
-    actions: [
-      { type: "poop", label: "うんち", unit: "count", color: "bg-[#f4c1d9]" },
-      { type: "care", label: "ケア", unit: "count", color: "bg-[#9ad0ff]" },
-    ],
-  },
-];
-
 const QuickActions = ({ petId }: QuickActionProps) => {
   const logQuick = useActivityStore((s) => s.logQuick);
   const [walkStart, setWalkStart] = useState<Date | null>(null);
@@ -62,32 +31,76 @@ const QuickActions = ({ petId }: QuickActionProps) => {
 
   return (
     <div className="space-y-3">
-      {sections.map((section) => (
-        <div key={section.title} className="space-y-2">
-          <p className="text-sm font-semibold text-primary/80">{section.title}</p>
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            {section.actions.map((action) => {
-              const isTimer = action.type === "walk" || action.type === "play";
-              const isWalk = action.type === "walk";
-              const isPlay = action.type === "play";
-              const active = (isWalk && walkStart) || (isPlay && playStart);
-              return (
-                <button
-                  key={action.type}
-                  className={`${action.color} rounded-xl py-3 text-base sm:py-4 sm:text-lg font-semibold text-white shadow-md active:scale-95 transition-transform border border-black/5`}
-                  onClick={() =>
-                    isTimer ? handleTimerToggle(action.type) : handleCount(action.type as "meal" | "treat" | "poop" | "care")
-                  }
-                >
-                  {isTimer && active ? "ストップ" : action.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <ActionCard
+          color="bg-[#d07355]"
+          title="Meal"
+          subtitle="Start"
+          onClick={() => handleCount("meal")}
+          icon="🍽"
+        />
+        <ActionCard
+          color="bg-[#4b89dc]"
+          title={walkStart ? "Walk" : "Walk"}
+          subtitle={walkStart ? "Stop" : "Start"}
+          onClick={() => handleTimerToggle("walk")}
+          icon={walkStart ? "⏹" : "▶"}
+          active={Boolean(walkStart)}
+        />
+        <ActionCard
+          color="bg-[#e6b43c]"
+          title={playStart ? "Play" : "Play"}
+          subtitle={playStart ? "Stop" : "Start"}
+          onClick={() => handleTimerToggle("play")}
+          icon={playStart ? "⏹" : "▶"}
+          active={Boolean(playStart)}
+        />
+      </div>
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <MiniAction label="Treat" icon="🦴" onClick={() => handleCount("treat")} />
+        <MiniAction label="Poop" icon="💩" onClick={() => handleCount("poop")} />
+        <MiniAction label="Care" icon="🐾" onClick={() => handleCount("care")} />
+      </div>
     </div>
   );
 };
+
+const ActionCard = ({
+  color,
+  title,
+  subtitle,
+  onClick,
+  icon,
+  active,
+}: {
+  color: string;
+  title: string;
+  subtitle: string;
+  icon: string;
+  active?: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className={`${color} rounded-2xl px-3 py-4 text-left text-white shadow-md border border-black/5 active:scale-95 transition`}
+  >
+    <div className="flex items-center justify-between">
+      <span className="text-2xl">{icon}</span>
+      {active && <span className="rounded-full bg-white/30 px-2 py-0.5 text-[10px] font-semibold">Recording</span>}
+    </div>
+    <p className="mt-3 text-lg font-bold leading-none">{title}</p>
+    <p className="text-sm opacity-90">{subtitle}</p>
+  </button>
+);
+
+const MiniAction = ({ label, icon, onClick }: { label: string; icon: string; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className="rounded-2xl border border-primary/15 bg-white px-3 py-3 shadow-sm flex flex-col items-center gap-1 text-primary active:scale-95 transition"
+  >
+    <span className="text-xl">{icon}</span>
+    <span className="text-xs font-semibold">{label}</span>
+  </button>
+);
 
 export default QuickActions;

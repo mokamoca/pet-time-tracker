@@ -37,6 +37,7 @@ const DashboardPage = () => {
 
   const data = range?.days ?? [];
   const labels = data.map((d) => d.date.slice(5));
+  const activePet = pets.find((p) => p.id === selectedPetId);
 
   const walkPlay = {
     labels,
@@ -116,11 +117,21 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2 whitespace-nowrap">
-          <span className="text-xl">📈</span> ダッシュボード
-        </h2>
-        <div className="grid grid-cols-4 gap-1 rounded-full bg-primary/10 p-1 sm:inline-grid sm:w-auto">
+      <div className="flex items-center justify-between rounded-2xl border border-primary/10 bg-primary/5 p-3">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-full bg-white border border-primary/10 overflow-hidden flex items-center justify-center">
+            {activePet?.photo_url ? (
+              <img src={activePet.photo_url} alt={activePet.name} className="h-full w-full object-cover" />
+            ) : (
+              <span className="text-lg">🐾</span>
+            )}
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">表示中のペット</p>
+            <p className="text-base font-semibold text-primary">{activePet?.name ?? "ペット未選択"}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-4 gap-1 rounded-full bg-primary/10 p-1">
           {(["week", "month", "year", "all"] as const).map((p) => (
             <button
               key={p}
@@ -134,6 +145,9 @@ const DashboardPage = () => {
           ))}
         </div>
       </div>
+      <h2 className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2 whitespace-nowrap">
+        <span className="text-xl">📈</span> ダッシュボード
+      </h2>
 
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
         <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} />

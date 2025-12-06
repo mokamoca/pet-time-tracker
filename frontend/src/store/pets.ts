@@ -5,6 +5,14 @@ import { supabase } from "../lib/supabase";
 export type Pet = {
   id: number;
   name: string;
+  species?: string | null;
+  weight?: number | null;
+  birthdate?: string | null;
+  photo_url?: string | null;
+};
+
+type PetInput = Partial<Pick<Pet, "name" | "species" | "weight" | "birthdate" | "photo_url">> & {
+  name: string;
 };
 
 type PetState = {
@@ -12,8 +20,8 @@ type PetState = {
   loaded: boolean;
   selectedPetId: number | null;
   load: () => Promise<void>;
-  add: (name: string) => Promise<void>;
-  update: (id: number, name: string) => Promise<void>;
+  add: (payload: PetInput) => Promise<void>;
+  update: (id: number, payload: Partial<PetInput>) => Promise<void>;
   remove: (id: number) => Promise<void>;
   selectPet: (id: number | null) => void;
 };
@@ -36,7 +44,7 @@ export const usePetStore = create<PetState>()(
         const nextSelected = hasCurrent ? current : pets[0]?.id ?? null;
         set({ pets, loaded: true, selectedPetId: nextSelected });
       },
-      add: async (name: string) => {
+      add: async (payload) => {
         const {
           data: { user },
           error: userError,
@@ -47,7 +55,7 @@ export const usePetStore = create<PetState>()(
         }
         const { data, error } = await supabase
           .from("pets")
-          .insert({ name, user_id: user.id })
+          .insert({ ...payload, user_id: user.id })
           .select()
           .single();
         if (error) {
@@ -60,8 +68,8 @@ export const usePetStore = create<PetState>()(
           return { pets, loaded: true, selectedPetId };
         });
       },
-      update: async (id, name) => {
-        const { data, error } = await supabase.from("pets").update({ name }).eq("id", id).select().single();
+      update: async (id, payload) => {
+        const { data, error } = await supabase.from("pets").update(payload).eq("id", id).select().single();
         if (error) {
           console.error(error);
           return;
