@@ -28,7 +28,6 @@ const palette = {
   primary: "#5c8f6b",
   bar: "#8ab38a",
   line: "#b58f66",
-  bgHeader: "#f6efe6",
   bgPill: "#e5d7c5",
   grid: "#e9dfd2",
 };
@@ -58,13 +57,15 @@ const DashboardPage = () => {
         label: "散歩(分)",
         data: data.map((d) => d.walk_min ?? 0),
         borderColor: palette.primary,
-        backgroundColor: "rgba(92,143,107,0.25)",
+        backgroundColor: "rgba(92,143,107,0.35)",
+        borderWidth: 0,
       },
       {
         label: "あそび(分)",
         data: data.map((d) => d.play_min ?? 0),
         borderColor: palette.accent,
-        backgroundColor: "rgba(194,170,142,0.25)",
+        backgroundColor: "rgba(194,170,142,0.35)",
+        borderWidth: 0,
       },
     ],
   };
@@ -126,22 +127,13 @@ const DashboardPage = () => {
   );
 
   return (
-    <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
-      <div className="flex items-center justify-between rounded-2xl border border-primary/10" style={{ background: palette.bgHeader }}>
-        <div className="flex items-center gap-3 p-3">
-          <div className="h-12 w-12 rounded-full bg-white border border-primary/10 overflow-hidden flex items-center justify-center">
-            {activePet?.photo_url ? (
-              <img src={activePet.photo_url} alt={activePet.name} className="h-full w-full object-cover" />
-            ) : (
-              <span className="text-lg">🐾</span>
-            )}
-          </div>
-          <div>
-            <p className="text-xs text-slate-500">表示中のペット</p>
-            <p className="text-base font-semibold text-primary">{activePet?.name ?? "ペット未選択"}</p>
-          </div>
+    <div className="space-y-4 rounded-3xl bg-white p-4 shadow-lg border border-primary/10">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs text-slate-500">{periodLabel[period]}</p>
+          <h2 className="text-lg font-semibold text-ink">{activePet?.name ?? "ペット未選択"}</h2>
         </div>
-        <div className="grid grid-cols-4 gap-1 rounded-full p-1 mr-3" style={{ background: palette.bgPill }}>
+        <div className="grid grid-cols-4 gap-1 rounded-full p-1" style={{ background: palette.bgPill }}>
           {(["week", "month", "year", "all"] as const).map((p) => (
             <button
               key={p}
@@ -156,10 +148,6 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <h2 className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2 whitespace-nowrap">
-        <span className="text-xl">📈</span> ダッシュボード
-      </h2>
-
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
         <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} tone="bar" />
         <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} tone="accent" />
@@ -169,43 +157,43 @@ const DashboardPage = () => {
         <SummaryCard title="ケア合計" value={`${Math.round(data.reduce((s, d) => s + (d.care_count ?? 0), 0))} 回`} tone="care" />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
-          <p className="mb-2 text-sm text-slate-600">散歩・あそびの推移</p>
+      <div className="grid gap-4">
+        <div className="bg-white p-3 rounded-2xl border border-primary/10 shadow-sm overflow-hidden">
+          <p className="mb-2 text-base font-semibold text-ink">Walk & Play Duration</p>
           <div className="h-64 w-full overflow-x-auto">
-            <Line
+            <Bar
               data={walkPlay}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
                   y: { beginAtZero: true, min: 0, grid: { color: palette.grid } },
-                  x: { grid: { color: palette.grid } },
+                  x: { grid: { color: "transparent" } },
                 },
                 plugins: { legend: { labels: { color: palette.text } } },
               }}
             />
           </div>
         </div>
-        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
-          <p className="mb-2 text-sm text-slate-600">ごはんの回数 (目標2回)</p>
+        <div className="bg-white p-3 rounded-2xl border border-primary/10 shadow-sm overflow-hidden">
+          <p className="mb-2 text-base font-semibold text-ink">Meals</p>
           <div className="h-64 w-full overflow-x-auto">
-            <Bar
+            <Line
               data={mealChart}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
                   y: { beginAtZero: true, min: 0, suggestedMax: 3, grid: { color: palette.grid } },
-                  x: { grid: { color: palette.grid } },
+                  x: { grid: { color: "transparent" } },
                 },
                 plugins: { legend: { labels: { color: palette.text } } },
               }}
             />
           </div>
         </div>
-        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
-          <p className="mb-2 text-sm text-slate-600">おやつ・うんち・ケア</p>
+        <div className="bg-white p-3 rounded-2xl border border-primary/10 shadow-sm overflow-hidden">
+          <p className="mb-2 text-base font-semibold text-ink">Other Counts</p>
           <div className="h-64 w-full overflow-x-auto">
             <Bar
               data={counts}
@@ -214,7 +202,7 @@ const DashboardPage = () => {
                 maintainAspectRatio: false,
                 scales: {
                   y: { beginAtZero: true, min: 0, grid: { color: palette.grid } },
-                  x: { grid: { color: palette.grid } },
+                  x: { grid: { color: "transparent" } },
                 },
                 plugins: { legend: { labels: { color: palette.text } } },
               }}
@@ -224,7 +212,7 @@ const DashboardPage = () => {
       </div>
 
       {bestDay.label && (
-        <div className="rounded-xl" style={{ background: palette.bgHeader, color: palette.text, padding: "12px" }}>
+        <div className="rounded-xl bg-[#f6efe6] text-ink p-3 text-sm">
           ベストな日: {bestDay.label} (スコア {Math.round(bestDay.score)})
         </div>
       )}
@@ -242,9 +230,9 @@ const toneBg: Record<string, string> = {
 };
 
 const SummaryCard = ({ title, value, tone = "bar" }: { title: string; value: string; tone?: string }) => (
-  <div className={`rounded-xl border border-primary/10 shadow-sm p-3 ${toneBg[tone] ?? toneBg.bar}`}>
-    <p className="text-xs text-slate-600">{title}</p>
-    <p className="text-lg font-semibold">{value}</p>
+  <div className={`rounded-2xl border border-primary/10 shadow-sm p-4 text-ink ${toneBg[tone] ?? toneBg.bar}`}>
+    <p className="text-sm text-slate-600">{title}</p>
+    <p className="text-xl font-semibold">{value}</p>
   </div>
 );
 
