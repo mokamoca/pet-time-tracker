@@ -32,6 +32,23 @@ const formatLocalDate = (date: Date) => {
   return `${y}-${m}-${d}`;
 };
 
+// ローカル日付の境界をUTCに補正した範囲を返す
+const getLocalDayRangeUtc = (date: string) => {
+  const localStart = startOfDay(new Date(date));
+  const offsetMs = localStart.getTimezoneOffset() * 60000;
+  const utcStart = new Date(localStart.getTime() - offsetMs);
+  const utcEnd = new Date(utcStart.getTime() + 24 * 60 * 60 * 1000);
+  return { utcStart, utcEnd };
+};
+
+// ISO文字列をローカル日付(YYYY-MM-DD)に変換
+const isoToLocalDateStr = (iso: string) => {
+  const d = new Date(iso);
+  const offsetMs = d.getTimezoneOffset() * 60000;
+  const local = new Date(d.getTime() - offsetMs);
+  return local.toISOString().slice(0, 10);
+};
+
 export const useStatsStore = create<State>((set) => ({
   daily: undefined,
   range: undefined,
@@ -44,13 +61,12 @@ export const useStatsStore = create<State>((set) => ({
     return `${y}-${m}-${d}`;
   },
   loadDaily: async (date) => {
-    const start = startOfDay(new Date(date));
-    const end = addDays(start, 1);
+    const { utcStart, utcEnd } = getLocalDayRangeUtc(date);
     const { data, error } = await supabase
       .from("activities")
       .select("*")
-      .gte("started_at", start.toISOString())
-      .lt("started_at", end.toISOString());
+      .gte("started_at", utcStart.toISOString())
+      .lt("started_at", utcEnd.toISOString());
     if (error) {
       console.error(error);
       return;
@@ -72,39 +88,45 @@ export const useStatsStore = create<State>((set) => ({
   },
   loadRange: async (period) => {
     set({ lastPeriod: period });
-    const today = startOfDay(new Date());
-    const tomorrowIso = addDays(today, 1).toISOString(); // include today fully
-    let startDate = addDays(today, -6); // default: past 7 days including today
+    const todayLocal = startOfDay(new Date());
+    const offsetMs = todayLocal.getTimezoneOffset() * 60000;
+    const todayUtcStart = new Date(todayLocal.getTime() - offsetMs);
+    const tomorrowUtc = new Date(todayUtcStart.getTime() + 24 * 60 * 60 * 1000); // include today fully
+
+    let startDateLocal = addDays(todayLocal, -6); // default: past 7 days including today
     let daysToFetch = 7;
 
     if (period === "month") {
-      startDate = addDays(today, -29);
+      startDateLocal = addDays(todayLocal, -29);
       daysToFetch = 30;
     }
     if (period === "year") {
-      startDate = addDays(today, -364);
+      startDateLocal = addDays(todayLocal, -364);
       daysToFetch = 365;
     }
     if (period === "all") {
       // fetch last 400 days to avoid huge payload; adjust if needed
-      startDate = addDays(today, -399);
+      startDateLocal = addDays(todayLocal, -399);
       daysToFetch = 400;
     }
+
+    const startUtc = new Date(startDateLocal.getTime() - offsetMs);
 
     const { data, error } = await supabase
       .from("activities")
       .select("*")
-      .gte("started_at", startOfDay(startDate).toISOString())
-      .lt("started_at", tomorrowIso);
+      .gte("started_at", startUtc.toISOString())
+      .lt("started_at", tomorrowUtc.toISOString());
     if (error) {
       console.error(error);
       return;
     }
+
     const days: State["range"]["days"] = [];
     for (let i = 0; i < daysToFetch; i++) {
-      const day = addDays(startDate, i);
-      const dayStr = formatLocalDate(day);
-      const dayActs = data?.filter((a) => formatLocalDate(new Date(a.started_at)) === dayStr) ?? [];
+      const dayLocal = addDays(startDateLocal, i);
+      const dayStr = formatLocalDate(dayLocal);
+      const dayActs = data?.filter((a) => isoToLocalDateStr(a.started_at) === dayStr) ?? [];
       const agg = { walk_min: 0, play_min: 0, treat_count: 0, care_count: 0 };
       dayActs.forEach((a) => {
         if (a.type === "walk") agg.walk_min += a.amount ?? 0;
@@ -114,6 +136,6 @@ export const useStatsStore = create<State>((set) => ({
       });
       days.push({ date: dayStr, ...agg, streak_info: null, change_vs_last_week: null });
     }
-    set({ range: { start: startDate.toISOString(), end: tomorrowIso, days } });
+    set({ range: { start: startUtc.toISOString(), end: tomorrowUtc.toISOString(), days } });
   },
 }));

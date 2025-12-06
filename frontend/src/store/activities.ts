@@ -2,24 +2,32 @@ import { create } from "zustand";
 import { supabase } from "../lib/supabase";
 import { useStatsStore } from "./stats";
 
+const activityTypes = ["walk", "play", "meal", "treat", "poop", "care"] as const;
+const activityUnits = ["min", "count"] as const;
+const activitySources = ["quick", "manual"] as const;
+
+type ActivityType = (typeof activityTypes)[number];
+type ActivityUnit = (typeof activityUnits)[number];
+type ActivitySource = (typeof activitySources)[number];
+
 export type Activity = {
   id: number;
   pet_id?: number;
-  type: string;
+  type: ActivityType;
   amount: number;
-  unit: string;
+  unit: ActivityUnit;
   started_at: string;
   ended_at?: string | null;
   note?: string;
-  source: string;
+  source: ActivitySource;
 };
 
 type State = {
   activities: Activity[];
   logQuick: (
-    type: string,
+    type: ActivityType,
     amount: number,
-    unit: string,
+    unit: ActivityUnit,
     pet_id?: number,
     started_at?: string,
     ended_at?: string,
@@ -43,6 +51,13 @@ export const useActivityStore = create<State>((set, get) => ({
     set({ activities: data ?? [] });
   },
   logQuick: async (type, amount, unit, pet_id, started_at, ended_at) => {
+    // 型安全なバリデーション（想定外の値を排除）
+    if (!activityTypes.includes(type)) return;
+    const expectedUnit: ActivityUnit = type === "walk" || type === "play" ? "min" : "count";
+    const useUnit = activityUnits.includes(unit) ? unit : expectedUnit;
+    const parsedAmount = Number(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return;
+
     const {
       data: { user },
       error: userError,
