@@ -56,16 +56,16 @@ const QuickActions = ({ petId, mealProgress = 0, mealLabel = "" }: QuickActionPr
         />
         <ActionCard
           color="bg-[#4b89dc]"
-          title="Walk"
-          subtitle={walkStart ? `経過 ${formatElapsed(walkStart)}` : "Start"}
+          title="散歩"
+          subtitle={walkStart ? `経過 ${formatElapsed(walkStart)}` : "スタート"}
           onClick={() => handleTimerToggle("walk")}
           icon={walkStart ? "⏹" : "▶"}
           active={Boolean(walkStart)}
         />
         <ActionCard
           color="bg-[#e6b43c]"
-          title="Play"
-          subtitle={playStart ? `経過 ${formatElapsed(playStart)}` : "Start"}
+          title="あそび"
+          subtitle={playStart ? `経過 ${formatElapsed(playStart)}` : "スタート"}
           onClick={() => handleTimerToggle("play")}
           icon={playStart ? "⏹" : "▶"}
           active={Boolean(playStart)}
@@ -73,8 +73,8 @@ const QuickActions = ({ petId, mealProgress = 0, mealLabel = "" }: QuickActionPr
       </div>
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <MiniAction label="Treat" icon="🦴" onClick={() => handleCount("treat")} />
-        <MiniAction label="Poop" icon="💩" onClick={() => handleCount("poop")} />
-        <MiniAction label="Care" icon="🐾" onClick={() => handleCount("care")} />
+        <MiniAction label="うんち" icon="💩" onClick={() => handleCount("poop")} />
+        <MiniAction label="ケア" icon="🐾" onClick={() => handleCount("care")} />
       </div>
     </div>
   );
@@ -120,22 +120,23 @@ const ActionCard = ({
 );
 
 const MealCard = ({ progress, label, onClick }: { progress: number; label: string; onClick: () => void }) => {
-  const percent = Math.round(progress * 100);
-  const angle = progress * 360;
+  const clamped = Math.max(0, Math.min(1, progress));
+  const angle = clamped * 360;
+  const current = Math.round(clamped * 2); // 2回が目標
   return (
     <button
       onClick={onClick}
       className="row-span-2 rounded-3xl bg-[#bf7053] text-white shadow-md border border-black/5 px-4 py-5 flex flex-col justify-between min-h-[220px] active:scale-95 transition"
     >
       <div className="text-left">
-        <p className="text-sm opacity-80">Meal</p>
+        <p className="text-sm opacity-80">ごはん</p>
       </div>
       <div className="mx-auto relative h-28 w-28 rounded-full flex items-center justify-center"
         style={{ background: `conic-gradient(#ffffff ${angle}deg, rgba(255,255,255,0.2) ${angle}deg)` }}>
         <div className="absolute inset-2 rounded-full bg-[#bf7053] flex items-center justify-center">
           <div className="text-center leading-tight">
-            <p className="text-sm opacity-90">{label || "Meal"}</p>
-            <p className="text-lg font-bold">{percent >= 100 ? "2/2" : `${(progress * 2).toFixed(1)}/2`}</p>
+            <p className="text-sm opacity-90">{label || "ごはん"}</p>
+            <p className="text-lg font-bold">{current}/2</p>
           </div>
         </div>
       </div>
