@@ -39,7 +39,13 @@ const HomePage = () => {
         <div className="grid grid-cols-2 gap-2 sm:gap-3 text-sm text-slate-700">
           <StatCard label="散歩" value={`${daily?.walk_min ?? 0} 分`} flashValue={daily?.walk_min ?? 0} />
           <StatCard label="遊び" value={`${daily?.play_min ?? 0} 分`} flashValue={daily?.play_min ?? 0} />
-          <StatCard label="ごはん" value={`${daily?.meal_count ?? 0} 回`} flashValue={daily?.meal_count ?? 0} />
+          <StatCard
+            label="ごはん"
+            value={`${daily?.meal_count ?? 0} 回`}
+            flashValue={daily?.meal_count ?? 0}
+            note={`目標2回: ${(daily?.meal_count ?? 0)} / 2`}
+            emphasize={daily ? (daily.meal_count ?? 0) < 2 : false}
+          />
           <StatCard label="おやつ" value={`${daily?.treat_count ?? 0} 回`} flashValue={daily?.treat_count ?? 0} />
           <StatCard label="うんち" value={`${daily?.poop_count ?? 0} 回`} flashValue={daily?.poop_count ?? 0} />
           <StatCard label="ケア" value={`${daily?.care_count ?? 0} 回`} flashValue={daily?.care_count ?? 0} />
@@ -52,7 +58,19 @@ const HomePage = () => {
   );
 };
 
-const StatCard = ({ label, value, flashValue }: { label: string; value: string; flashValue: number }) => {
+const StatCard = ({
+  label,
+  value,
+  flashValue,
+  note,
+  emphasize = false,
+}: {
+  label: string;
+  value: string;
+  flashValue: number;
+  note?: string;
+  emphasize?: boolean;
+}) => {
   const [flash, setFlash] = useState(false);
   const timerRef = useRef<number | null>(null);
 
@@ -63,11 +81,16 @@ const StatCard = ({ label, value, flashValue }: { label: string; value: string; 
   }, [flashValue]);
 
   return (
-    <div className="rounded-xl bg-white p-3 sm:p-4 border border-primary/10 shadow-sm">
+    <div
+      className={`rounded-xl p-3 sm:p-4 border border-primary/10 shadow-sm ${
+        emphasize ? "bg-accent/10" : "bg-white"
+      }`}
+    >
       <p className="text-xs text-slate-500">{label}</p>
       <p className={`text-lg font-semibold text-primary transition ${flash ? "animate-pulse drop-shadow-sm" : ""}`}>
         {value}
       </p>
+      {note && <p className="text-[11px] text-slate-500 mt-1">{note}</p>}
     </div>
   );
 };

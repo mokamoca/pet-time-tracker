@@ -50,7 +50,9 @@ const DashboardPage = () => {
     ],
   };
 
-  const counts = {
+  const mealTarget = 2;
+
+  const mealChart = {
     labels,
     datasets: [
       {
@@ -58,6 +60,22 @@ const DashboardPage = () => {
         data: data.map((d) => d.meal_count ?? 0),
         backgroundColor: "#ffcf8d",
       },
+      {
+        type: "line" as const,
+        label: "目標(2回)",
+        data: labels.map(() => mealTarget),
+        borderColor: "#ff9eb0",
+        borderWidth: 1.5,
+        pointRadius: 0,
+        borderDash: [6, 4],
+        yAxisID: "y",
+      },
+    ],
+  };
+
+  const counts = {
+    labels,
+    datasets: [
       {
         label: "おやつ(回)",
         data: data.map((d) => d.treat_count ?? 0),
@@ -137,7 +155,22 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
-          <p className="mb-2 text-sm text-slate-600">ごはん・おやつ・うんち・ケア</p>
+          <p className="mb-2 text-sm text-slate-600">ごはんの回数 (目標2回)</p>
+          <div className="h-64 w-full overflow-x-auto">
+            <Bar
+              data={mealChart}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  y: { beginAtZero: true, min: 0, suggestedMax: 3 },
+                },
+              }}
+            />
+          </div>
+        </div>
+        <div className="bg-white p-3 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
+          <p className="mb-2 text-sm text-slate-600">おやつ・うんち・ケア</p>
           <div className="h-64 w-full overflow-x-auto">
             <Bar
               data={counts}
