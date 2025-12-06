@@ -59,18 +59,7 @@ const HomePage = () => {
               ))}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-2 mt-3">
-            <div className="h-20 w-20 rounded-full border-4 border-primary/40 overflow-hidden flex items-center justify-center shadow">
-              {pets.find((p) => p.id === activePetId)?.photo_url ? (
-                <img
-                  src={pets.find((p) => p.id === activePetId)!.photo_url!}
-                  alt={pets.find((p) => p.id === activePetId)!.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-2xl">🐾</span>
-              )}
-            </div>
+          <div className="flex flex-col items-center gap-1 mt-2">
             <h2 className="text-xl font-bold text-ink">{pets.find((p) => p.id === activePetId)?.name ?? "ペット未選択"}</h2>
             <p className="text-xs text-slate-500">Active</p>
           </div>
