@@ -39,29 +39,45 @@ const HomePage = () => {
           </Link>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10">
-          <div className="flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-white shadow p-4 sm:p-5 border border-primary/10 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="h-14 w-14 rounded-full bg-primary/10 overflow-hidden flex items-center justify-center border border-primary/10">
+              {pets.find((p) => p.id === activePetId)?.photo_url ? (
+                <img
+                  src={pets.find((p) => p.id === activePetId)!.photo_url!}
+                  alt={pets.find((p) => p.id === activePetId)!.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-xl">🐾</span>
+              )}
+            </div>
             <div>
               <p className="text-xs text-slate-500">表示中のペット</p>
               <h2 className="text-lg font-semibold text-primary">
                 {pets.find((p) => p.id === activePetId)?.name ?? "ペット未選択"}
               </h2>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {pets.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => selectPet(p.id)}
-                  className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
-                    p.id === activePetId
-                      ? "bg-primary text-white border-primary"
-                      : "bg-white text-primary border-primary/30"
-                  }`}
-                >
-                  {p.name}
-                </button>
-              ))}
-            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {pets.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => selectPet(p.id)}
+                className={`flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold transition ${
+                  p.id === activePetId ? "bg-primary text-white border-primary" : "bg-white text-primary border-primary/30"
+                }`}
+              >
+                <span className="h-6 w-6 rounded-full bg-primary/10 overflow-hidden flex items-center justify-center">
+                  {p.photo_url ? (
+                    <img src={p.photo_url} alt={p.name} className="h-full w-full object-cover" />
+                  ) : (
+                    "🐾"
+                  )}
+                </span>
+                {p.name}
+              </button>
+            ))}
           </div>
         </div>
       )}
