@@ -33,13 +33,35 @@ const App = () => {
             <img src="/logo.png" alt="PetLeaf" className="h-[52px] w-auto object-contain" />
           </Link>
           {authed ? (
-            <button
-              onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-primary shadow-md border border-primary/10 active:scale-95 transition"
-              aria-label="メニュー"
-            >
-              <span className="text-xl">☰</span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary shadow-md border border-primary/10 active:scale-95 transition"
+                aria-label="アカウント"
+              >
+                <IconUser />
+              </button>
+              {menuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-20 bg-black/25"
+                    onClick={() => setMenuOpen(false)}
+                    role="presentation"
+                  />
+                  <div className="absolute right-0 mt-2 z-30 w-40 rounded-2xl bg-white p-2 shadow-2xl border border-primary/10">
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false);
+                        logout();
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10 text-left"
+                    >
+                      ログアウト
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           ) : (
             <div className="flex items-center gap-2">
               {navItems
@@ -189,3 +211,10 @@ const Protected = ({ authed, element }: { authed: boolean; element: JSX.Element 
 };
 
 export default App;
+
+const IconUser = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" />
+    <path d="M5 20a7 7 0 0 1 14 0" />
+  </svg>
+);
