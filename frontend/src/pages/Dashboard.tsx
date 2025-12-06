@@ -22,6 +22,17 @@ const periodLabel: Record<"week" | "month" | "year" | "all", string> = {
   all: "ぜんぶ",
 };
 
+const palette = {
+  text: "#2f2a25",
+  accent: "#c2aa8e",
+  primary: "#5c8f6b",
+  bar: "#8ab38a",
+  line: "#b58f66",
+  bgHeader: "#f6efe6",
+  bgPill: "#e5d7c5",
+  grid: "#e9dfd2",
+};
+
 const DashboardPage = () => {
   const { range, loadRange } = useStatsStore();
   const { selectedPetId, pets, load: loadPets } = usePetStore();
@@ -38,6 +49,7 @@ const DashboardPage = () => {
   const data = range?.days ?? [];
   const labels = data.map((d) => d.date.slice(5));
   const activePet = pets.find((p) => p.id === selectedPetId);
+  const mealTarget = 2;
 
   const walkPlay = {
     labels,
@@ -45,19 +57,17 @@ const DashboardPage = () => {
       {
         label: "散歩(分)",
         data: data.map((d) => d.walk_min ?? 0),
-        borderColor: "#ff9eb0",
-        backgroundColor: "rgba(255,158,176,0.2)",
+        borderColor: palette.primary,
+        backgroundColor: "rgba(92,143,107,0.25)",
       },
       {
         label: "あそび(分)",
         data: data.map((d) => d.play_min ?? 0),
-        borderColor: "#a7e6c2",
-        backgroundColor: "rgba(167,230,194,0.2)",
+        borderColor: palette.accent,
+        backgroundColor: "rgba(194,170,142,0.25)",
       },
     ],
   };
-
-  const mealTarget = 2;
 
   const mealChart = {
     labels,
@@ -65,13 +75,13 @@ const DashboardPage = () => {
       {
         label: "ごはん(回)",
         data: data.map((d) => d.meal_count ?? 0),
-        backgroundColor: "#ffcf8d",
+        backgroundColor: palette.accent,
       },
       {
         type: "line" as const,
         label: "目標(2回)",
         data: labels.map(() => mealTarget),
-        borderColor: "#ff9eb0",
+        borderColor: palette.line,
         borderWidth: 1.5,
         pointRadius: 0,
         borderDash: [6, 4],
@@ -86,17 +96,17 @@ const DashboardPage = () => {
       {
         label: "おやつ(回)",
         data: data.map((d) => d.treat_count ?? 0),
-        backgroundColor: "#ffd166",
+        backgroundColor: "#d4b46b",
       },
       {
         label: "うんち(回)",
         data: data.map((d) => d.poop_count ?? 0),
-        backgroundColor: "#f4c1d9",
+        backgroundColor: "#d7b3a1",
       },
       {
         label: "ケア(回)",
         data: data.map((d) => d.care_count ?? 0),
-        backgroundColor: "#9ad0ff",
+        backgroundColor: "#9ab8cc",
       },
     ],
   };
@@ -117,8 +127,8 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-4 rounded-2xl bg-white p-4 shadow-lg border border-primary/10">
-      <div className="flex items-center justify-between rounded-2xl border border-primary/10 bg-primary/5 p-3">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between rounded-2xl border border-primary/10" style={{ background: palette.bgHeader }}>
+        <div className="flex items-center gap-3 p-3">
           <div className="h-12 w-12 rounded-full bg-white border border-primary/10 overflow-hidden flex items-center justify-center">
             {activePet?.photo_url ? (
               <img src={activePet.photo_url} alt={activePet.name} className="h-full w-full object-cover" />
@@ -131,7 +141,7 @@ const DashboardPage = () => {
             <p className="text-base font-semibold text-primary">{activePet?.name ?? "ペット未選択"}</p>
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-1 rounded-full bg-primary/10 p-1">
+        <div className="grid grid-cols-4 gap-1 rounded-full p-1 mr-3" style={{ background: palette.bgPill }}>
           {(["week", "month", "year", "all"] as const).map((p) => (
             <button
               key={p}
@@ -145,17 +155,18 @@ const DashboardPage = () => {
           ))}
         </div>
       </div>
+
       <h2 className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2 whitespace-nowrap">
         <span className="text-xl">📈</span> ダッシュボード
       </h2>
 
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-        <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} />
-        <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} />
-        <SummaryCard title="ごはん合計" value={`${Math.round(data.reduce((s, d) => s + (d.meal_count ?? 0), 0))} 回`} />
-        <SummaryCard title="おやつ合計" value={`${Math.round(data.reduce((s, d) => s + (d.treat_count ?? 0), 0))} 回`} />
-        <SummaryCard title="うんち合計" value={`${Math.round(data.reduce((s, d) => s + (d.poop_count ?? 0), 0))} 回`} />
-        <SummaryCard title="ケア合計" value={`${Math.round(data.reduce((s, d) => s + (d.care_count ?? 0), 0))} 回`} />
+        <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} tone="bar" />
+        <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} tone="accent" />
+        <SummaryCard title="ごはん合計" value={`${Math.round(data.reduce((s, d) => s + (d.meal_count ?? 0), 0))} 回`} tone="meal" />
+        <SummaryCard title="おやつ合計" value={`${Math.round(data.reduce((s, d) => s + (d.treat_count ?? 0), 0))} 回`} tone="treat" />
+        <SummaryCard title="うんち合計" value={`${Math.round(data.reduce((s, d) => s + (d.poop_count ?? 0), 0))} 回`} tone="poop" />
+        <SummaryCard title="ケア合計" value={`${Math.round(data.reduce((s, d) => s + (d.care_count ?? 0), 0))} 回`} tone="care" />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -168,8 +179,10 @@ const DashboardPage = () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                  y: { beginAtZero: true, min: 0 },
+                  y: { beginAtZero: true, min: 0, grid: { color: palette.grid } },
+                  x: { grid: { color: palette.grid } },
                 },
+                plugins: { legend: { labels: { color: palette.text } } },
               }}
             />
           </div>
@@ -183,8 +196,10 @@ const DashboardPage = () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                  y: { beginAtZero: true, min: 0, suggestedMax: 3 },
+                  y: { beginAtZero: true, min: 0, suggestedMax: 3, grid: { color: palette.grid } },
+                  x: { grid: { color: palette.grid } },
                 },
+                plugins: { legend: { labels: { color: palette.text } } },
               }}
             />
           </div>
@@ -198,8 +213,10 @@ const DashboardPage = () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                  y: { beginAtZero: true, min: 0 },
+                  y: { beginAtZero: true, min: 0, grid: { color: palette.grid } },
+                  x: { grid: { color: palette.grid } },
                 },
+                plugins: { legend: { labels: { color: palette.text } } },
               }}
             />
           </div>
@@ -207,7 +224,7 @@ const DashboardPage = () => {
       </div>
 
       {bestDay.label && (
-        <div className="rounded-xl bg-primary/10 p-3 text-sm text-primary">
+        <div className="rounded-xl" style={{ background: palette.bgHeader, color: palette.text, padding: "12px" }}>
           ベストな日: {bestDay.label} (スコア {Math.round(bestDay.score)})
         </div>
       )}
@@ -215,10 +232,19 @@ const DashboardPage = () => {
   );
 };
 
-const SummaryCard = ({ title, value }: { title: string; value: string }) => (
-  <div className="rounded-xl bg-white border border-primary/10 shadow-sm p-3">
-    <p className="text-xs text-slate-500">{title}</p>
-    <p className="text-lg font-semibold text-primary">{value}</p>
+const toneBg: Record<string, string> = {
+  bar: "bg-[#f0efe8] text-[#2f2a25]",
+  accent: "bg-[#f3ede5] text-[#2f2a25]",
+  meal: "bg-[#f6ebe2] text-[#2f2a25]",
+  treat: "bg-[#f7f0e2] text-[#2f2a25]",
+  poop: "bg-[#f4ede7] text-[#2f2a25]",
+  care: "bg-[#eaf1f6] text-[#2f2a25]",
+};
+
+const SummaryCard = ({ title, value, tone = "bar" }: { title: string; value: string; tone?: string }) => (
+  <div className={`rounded-xl border border-primary/10 shadow-sm p-3 ${toneBg[tone] ?? toneBg.bar}`}>
+    <p className="text-xs text-slate-600">{title}</p>
+    <p className="text-lg font-semibold">{value}</p>
   </div>
 );
 
