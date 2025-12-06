@@ -57,15 +57,17 @@ const DashboardPage = () => {
         label: "散歩(分)",
         data: data.map((d) => d.walk_min ?? 0),
         borderColor: palette.primary,
-        backgroundColor: "rgba(92,143,107,0.35)",
-        borderWidth: 0,
+        backgroundColor: "rgba(92,143,107,0.05)",
+        tension: 0.4,
+        fill: false,
       },
       {
         label: "あそび(分)",
         data: data.map((d) => d.play_min ?? 0),
         borderColor: palette.accent,
-        backgroundColor: "rgba(194,170,142,0.35)",
-        borderWidth: 0,
+        backgroundColor: "rgba(194,170,142,0.05)",
+        tension: 0.4,
+        fill: false,
       },
     ],
   };
@@ -91,23 +93,13 @@ const DashboardPage = () => {
     ],
   };
 
-  const counts = {
+  const poopBar = {
     labels,
     datasets: [
-      {
-        label: "おやつ(回)",
-        data: data.map((d) => d.treat_count ?? 0),
-        backgroundColor: "#d4b46b",
-      },
       {
         label: "うんち(回)",
         data: data.map((d) => d.poop_count ?? 0),
         backgroundColor: "#d7b3a1",
-      },
-      {
-        label: "ケア(回)",
-        data: data.map((d) => d.care_count ?? 0),
-        backgroundColor: "#9ab8cc",
       },
     ],
   };
@@ -148,20 +140,11 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-        <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} tone="bar" />
-        <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} tone="accent" />
-        <SummaryCard title="ごはん合計" value={`${Math.round(data.reduce((s, d) => s + (d.meal_count ?? 0), 0))} 回`} tone="meal" />
-        <SummaryCard title="おやつ合計" value={`${Math.round(data.reduce((s, d) => s + (d.treat_count ?? 0), 0))} 回`} tone="treat" />
-        <SummaryCard title="うんち合計" value={`${Math.round(data.reduce((s, d) => s + (d.poop_count ?? 0), 0))} 回`} tone="poop" />
-        <SummaryCard title="ケア合計" value={`${Math.round(data.reduce((s, d) => s + (d.care_count ?? 0), 0))} 回`} tone="care" />
-      </div>
-
-      <div className="grid gap-4">
+      <div className="space-y-4">
         <div className="bg-white p-3 rounded-2xl border border-primary/10 shadow-sm overflow-hidden">
-          <p className="mb-2 text-base font-semibold text-ink">Walk & Play Duration</p>
-          <div className="h-64 w-full overflow-x-auto">
-            <Bar
+          <p className="mb-2 text-base font-semibold text-ink">Walk & Play</p>
+          <div className="h-56 w-full overflow-x-auto">
+            <Line
               data={walkPlay}
               options={{
                 responsive: true,
@@ -170,14 +153,15 @@ const DashboardPage = () => {
                   y: { beginAtZero: true, min: 0, grid: { color: palette.grid } },
                   x: { grid: { color: "transparent" } },
                 },
-                plugins: { legend: { labels: { color: palette.text } } },
+                plugins: { legend: { display: false } },
+                elements: { point: { radius: 3 } },
               }}
             />
           </div>
         </div>
         <div className="bg-white p-3 rounded-2xl border border-primary/10 shadow-sm overflow-hidden">
           <p className="mb-2 text-base font-semibold text-ink">Meals</p>
-          <div className="h-64 w-full overflow-x-auto">
+          <div className="h-56 w-full overflow-x-auto">
             <Line
               data={mealChart}
               options={{
@@ -187,16 +171,17 @@ const DashboardPage = () => {
                   y: { beginAtZero: true, min: 0, suggestedMax: 3, grid: { color: palette.grid } },
                   x: { grid: { color: "transparent" } },
                 },
-                plugins: { legend: { labels: { color: palette.text } } },
+                plugins: { legend: { display: false } },
+                elements: { point: { radius: 3 } },
               }}
             />
           </div>
         </div>
         <div className="bg-white p-3 rounded-2xl border border-primary/10 shadow-sm overflow-hidden">
-          <p className="mb-2 text-base font-semibold text-ink">Other Counts</p>
-          <div className="h-64 w-full overflow-x-auto">
+          <p className="mb-2 text-base font-semibold text-ink">Poop</p>
+          <div className="h-56 w-full overflow-x-auto">
             <Bar
-              data={counts}
+              data={poopBar}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
@@ -204,11 +189,17 @@ const DashboardPage = () => {
                   y: { beginAtZero: true, min: 0, grid: { color: palette.grid } },
                   x: { grid: { color: "transparent" } },
                 },
-                plugins: { legend: { labels: { color: palette.text } } },
+                plugins: { legend: { display: false } },
               }}
             />
           </div>
         </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <SummaryCard title="散歩合計" value={`${Math.round(data.reduce((s, d) => s + (d.walk_min ?? 0), 0))} 分`} tone="bar" />
+        <SummaryCard title="遊び合計" value={`${Math.round(data.reduce((s, d) => s + (d.play_min ?? 0), 0))} 分`} tone="accent" />
+        <SummaryCard title="ごはん合計" value={`${Math.round(data.reduce((s, d) => s + (d.meal_count ?? 0), 0))} 回`} tone="meal" />
       </div>
 
       {bestDay.label && (
